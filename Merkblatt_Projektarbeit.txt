@@ -1,0 +1,167 @@
+Merkblatt zur Abschlussprüfung Teil 2 Fachinformatiker/-in
+Prüfungsstruktur
+Inhalt von Teil 2 (für alle Fachrichtungen)
+(1) Gemäß der §§ 10, 18, 26, 34 der Verordnung erstreckt sich der Teil 2 der Abschlussprüfung auf
+1. die im Ausbildungsrahmenplan genannten Fertigkeiten, Kenntnisse und Fähigkeiten sowie
+2. den im Berufsschulunterricht zu vermittelnden Lehrstoff, soweit er den im
+Ausbildungsrahmenplan genannten Fertigkeiten, Kenntnissen und Fähigkeiten entspricht.
+(2) In Teil 2 der Abschlussprüfung sollen Fertigkeiten, Kenntnisse und Fähigkeiten, die bereits
+Gegenstand von Teil 1 der Abschlussprüfung waren, nur insoweit einbezogen werden, als es für die
+Feststellung der beruflichen Handlungsfähigkeit erforderlich ist.
+Fachrichtung Anwendungsentwicklung
+Prüfungsbereiche von Teil 2
+1. Planen und Umsetzen eines Softwareprojektes
+2. Planen eines Softwareproduktes
+3. Entwicklung und Umsetzung von Algorithmen sowie
+4. Wirtschafts- und Sozialkunde
+Anforderungen
+(1) Im Prüfungsbereich Planen und Umsetzen eines Softwareprojektes besteht die Prüfung aus zwei
+Teilen.
+(2) Im ersten Teil hat der Prüfling nachzuweisen, dass er in der Lage ist,
+1. kundenspezifische Anforderungen zu analysieren,
+2. eine Projektplanung durchzuführen
+3. eine wirtschaftliche Betrachtung des Projektes vorzunehmen
+4. eine Softwareanwendung zu erstellen oder anzupassen,
+5. die erstellte oder angepasste Softwareanwendung zu testen und ihre Einführung
+vorzubereiten und
+6. die Planung und Durchführung des Projektes anforderungsgerecht zu dokumentieren.
+Gemäß der Ausbildungsverordnung hat der Prüfungsteilnehmer im Prüfungsbereich "Planen und
+Umsetzen eines Softwareprojektes" eine betriebliche Projektarbeit durchzuführen und mit
+praxisbezogenen Unterlagen zu dokumentieren. Vor der Durchführung der betrieblichen
+Projektarbeit hat er dem Prüfungsausschuss eine Projektbeschreibung zur Genehmigung vorzulegen.
+In der Projektbeschreibung hat er die Ausgangssituation und das Projektziel zu beschreiben und eine
+Zeitplanung aufzustellen. Die Prüfungszeit beträgt für die betrieblich Projektarbeit und für die
+Dokumentation mit praxisbezogenen Unterlagen höchstens 80 Stunden.
+Merkblatt zur Abschlussprüfung Teil 2 Fachinformatiker/-in
+(3) Im zweiten Teil hat der Prüfling nachzuweisen, dass er in der Lage ist,
+1. die Arbeitsergebnisse adressatengerecht zu präsentieren und
+2. seine Vorgehensweise bei der Durchführung der betrieblichen Projektarbeit zu begründen.
+Der Prüfling hat die betriebliche Projektarbeit zu präsentieren. Nach der Präsentation wird mit ihm
+ein Fachgespräch über die betriebliche Projektarbeit und die präsentierten Arbeitsergebnisse
+geführt. Die Prüfungszeit beträgt insgesamt höchstens 30 Minuten. Die Präsentation soll höchstens
+15 Minuten dauern.
+
+Formale Gestaltung und Umfang der Dokumentation und evtl. zusätzliche Anlagen
+Informationen zum Projektantrag:
+Antragsdaten
+Hier sind die Angaben zur Person und ggf. zum Ausbildungsbetrieb, zu vervollständigen. Unbedingt
+notwendig ist die Angabe einer funktionsfähigen E-Mail-Adresse, da der gesamte
+Informationsaustausch hierüber abgeschlossen wird. Wird ein Spamfilter eingesetzt, muss
+sichergestellt werden, dass E-Mails nicht blockiert werden.
+Projekt
+Es soll sich möglichst um ein reales Projekt handeln. Die Projektarbeit soll keine künstliche,
+ausschließlich für die Prüfung entwickelte Aufgabenstellung enthalten, sondern einen betrieblichen
+Bezug aufweisen. Das Projekt muss machbar und nachvollziehbar sein.
+Struktur bzw. Gliederung des Projektes:
+1. Projektantrag
+1.1 Kurzform der Aufgabenstellung
+1.2 Ist-Analyse
+2. Zielsetzung entwickeln/Soll-Konzept
+2.1 Was soll am Ende des Projektes erreicht sein?
+2.2 Welche Anforderungen müssen erfüllt sein?
+2.3 Welche Einschränkungen müssen berücksichtigt werden?
+3. Projektstrukturplan entwickeln
+3.1 Was ist zur Erfüllung der Zielsetzung erforderlich
+3.2 Hauptaufgaben auflisten
+3.3 Teilaufgaben auflisten
+3.4 Grafische oder tabellarische Darstellung
+4. Projektphasen mit Zeitplanung in Stunden
+Hinweis zu 3.4
+Es kann aus technischen Gründen nur eine Datei hochgeladen werden. Sollten z.B. mehrere Grafiken
+aus Einzeldateien bestehen, so müssen diese zu einer Datei verschmolzen werden.
+Merkblatt zur Abschlussprüfung Teil 2 Fachinformatiker/-in
+Hinweis: Von Prüflingen im Ausbildungsberuf Fachinformatiker /-in der Fachrichtung
+Anwendungsentwicklung werden zusätzliche Angaben zu den verwendeten Technologien (z. B.
+Entwicklungsumgebungen, Frameworks, Programmiersprachen, Dateiformate, Protokolle,
+Architekturen) gefordert. Diese sind in der Struktur / Gliederung des Projektantrags unter Punkt 2
+einzutragen.
+Wenn der Antrag vom Prüfungsteilnehmer fertiggestellt wurde, ist dieser mit dessen PIN zu
+bestätigen. Im Anschluss erhält der Ausbildenden eine E-Mail nebst Link über den der Projektantrag
+einzusehen ist. Hierfür benötigt der Ausbildende seine eigene Pin und sein eigenes Passwort.
+Sollen vom Prüfungsteilnehmer noch Änderungen vorgenommen werden, kann dieser über die
+Schaltfläche „Rücknahme“ unter „Antragsweiterleitung“ den Antrag erneut bearbeiten. Sollen vom
+Prüfungsteilnehmer keine Änderungen vorgenommen werden, ist der Antrag vom Ausbildenden über
+dessen PIN zu bestätigen.
+Wichtiger Hinweis: Ausbildender und Auszubildender haben für das Online-System verschiedene
+Zugangsplattformen! Der Ausbildende kann erst nach versandt des Projektantrages durch den
+Auszubildenden und nach Zugang der E-Mail auf das Online-System zugreifen.
+Durch die Bestätigung des Ausbildenden wird der Antrag an den Prüfungsausschuss weitergeleitet.
+Der Prüfungsteilnehmer erhält eine E-Mail als Eingangsbestätigung. Der Antrag und dessen
+Sachstand ist jederzeit im Internet einsehbar, Änderungen können jedoch nicht mehr durchgeführt
+werden.
+Es können nur vollständig ausgefüllte Anträge zur Genehmigung an den Prüfungsausschuss
+weitergeleitet werden. Der Projektantrag wird nicht bewertet, sondern genehmigt, mit Auflagen
+genehmigt oder abgelehnt.
+Wurde der Projektantrag mit Auflagen genehmigt, sind diese unbedingt bei der
+Projektdokumentation zu berücksichtigen. Hierüber wird der Prüfungsteilnehmer über E-Mail
+informiert.
+Sofern die Auflagen nicht eingehalten werden, kann dieses zum Punktabzug oder Nichtbestehen der
+Prüfung führen.
+Wurde der Projektantrag abgelehnt, ist ein neuer Projektantrag in der gewährten Frist einzureichen.
+Merkblatt zur Abschlussprüfung Teil 2 Fachinformatiker/-in
+Inhalt der Dokumentation
+- Deckblatt
+- Name des Prüfungsbewerbers, Geburtsdatum, Ausbildungsberuf
+- Name des Ausbildungsbetriebes
+- Thema der Projektarbeit (Projektziel)
+- falls erforderlich, eine Beschreibung/Konkretisierung des Auftrags (technische und kaufmännische
+Nachvollziehbarkeit der Vorgehensweise, der Entscheidungen, des Ergebnisses und des
+Zeitaufwandes für die Prozessschritte)
+- Angaben zur Software, Anzahl der Endgeräte, der verwendeten Plattform/en etc.,
+Ressourcenplanung, Kostenkalkulation
+- umfassende Beschreibung der Prozessschritte und der erzielten Ergebnisse
+- gegebenenfalls Veränderungen zum Projektantrag mit Begründung
+- Angemessene Betriebs- und Kundendokumentation
+- Quellenangaben (bei der Verwendung vorgefertigter Folien (Corporate Design), Auszügen aus
+dem Internet etc. ist unbedingt die Quelle anzugeben). Ohne Quellenangabe kann die
+Verwendung als Täuschungsversuch angesehen werden.
+Formale Gestaltung und Umfang der Dokumentation und evtl. zusätzlicher Anlagen
+Bitte beachten Sie bei der schriftlichen Dokumentation der Projektarbeit die nachfolgenden Vorgaben:
+maximal 15 DIN-A-4 Seiten (ohne Deckblatt, Inhaltsverzeichnis und Literaturverzeichnis) zuzüglich
+Anlagen.
+Schriftgröße Arial 11 Punkt
+Zeilenabstand einzeilig
+Seiten fortlaufend nummeriert
+Seitenränder:
+oben: 3,3 cm links: 2,5 cm
+unten: 2,5 cm rechts: 2,5 cm
+Die Dokumentation ist in deutscher Sprache zu verfassen. Der Anhang soll nicht unnötig aufgebläht
+werden. Die angehängten Dokumente und Unterlagen sind auf das absolute Minimum zu
+beschränken.
+Die Dokumentation muss vollständig und nachvollziehbar als „Upload“ mit max. 5 MB inklusive
+Anhang als ausdruckbares PDF-Dokument ins Internet eingestellt werden. Andere Dateiformate sind
+nicht möglich. Der Upload muss spätestens am Abgabetermin erfolgen.
+Merkblatt zur Abschlussprüfung Teil 2 Fachinformatiker/-in
+Präsentation und Fachgespräch
+Prüfungsteilnehmer erhalten von der HK eine schriftliche Einladung mit Angabe der Uhrzeit für die
+Präsentation/das Fachgespräch. Vor Prüfungsbeginn haben sie Gelegenheit, die benötigten Medien
+(Tageslichtprojektor, Beamer, Notebook o. ä.) für die Präsentation vorzubereiten und aufzubauen.
+Die Handelskammer Bremen stellt einen Beamer als Präsentationsmittel zur Verfügung. Notebook etc.
+sind vom Prüfungsteilnehmer mitzubringen. Über die Funktionalität evtl. vorhandene
+Präsentationsmittel übernimmt die HK keine Verantwortung.
+Das Fachgespräch bezieht sich in erster Linie auf Themengebiete der Dokumentation und der
+Projektarbeit. Hierbei soll der Prüfungsteilnehmer zeigen, dass er fachbezogene Probleme und
+Lösungskonzepte zielgruppengerecht darstellen kann. Dabei soll der für die Projektarbeit relevante
+fachliche Hintergrund aufgezeigt sowie die Vorgehensweise im Projekt begründet werden.
+Nach dem Fachgespräch wird sich der Prüfungsausschuss kurz beraten.
+Bewertungskriterien
+Als Bewertungskriterien kommen in Betracht:
+Projektarbeit – Formale und sprachliche Gestaltung
+– Beschreibung des Auftrags (Verständlichkeit und Nach-
+vollziehbarkeit, Kundenbezug)
+– Konkretisierung des Auftrags (technische und
+kaufmännische Nachvollziehbarkeit)
+– Angemessene Betriebs- und Kundendokumentation
+Präsentation/ – Fachkenntnisse
+Fachgespräch – Rhetorik
+– Begrüßung und Einstieg in die Präsentation
+Die Bewertung im Prüfungsteil "Planen und Umsetzen eines Projektes der digitalen Vernetzung"
+- Projektarbeit einschließlich Dokumentation 50 %
+- Projektpräsentation einschließlich Fachgespräch 50 %
+Der Prüfungsteil "Planen und Umsetzen eines Projektes der digitalen Vernetzung" besteht aus der
+Projektarbeit und deren Dokumentation, der Präsentation und dem Fachgespräch. Diese sind als
+Einheit zu verstehen. Sofern ein Prüfungsteilnehmer die Dokumentation bestanden hat, aber in der
+Präsentation/dem Fachgespräch durchgefallen ist, muss der gesamte Prüfungsteil komplett
+wiederholt werden. Gleiches gilt für den Fall, dass ein Projektantrag gestellt und genehmigt wurde, die
+Dokumentation jedoch nicht abgegeben wurde. In diesem Fall ist in der nächsten Prüfung ein neuer
+Projektantrag zu stellen.

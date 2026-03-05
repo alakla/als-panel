@@ -1,0 +1,149 @@
+Betriebliche Projektarbeit 
+Vorschlag: 1
+Beruf: Fachinformatiker Fachrichtung: Anwendungsentwicklung
+Prüfungstermin: Sommer 2026
+
+1 Projektantrag* 
+Entwicklung eines webbasierten Verwaltungssystems für ein Personaldienstleistungsfirma
+inklusive digitaler Zeiterfassung für Mitarbeitende
+
+1.1 Kurzform der Aufgabenstellung* 
+Ziel dieses Projektes ist die Konzeption und Umsetzung eines webbasierten Softwaresystems für
+ein neu gegründetes Personaldienstleistungsfirma.
+Das System soll die Verwaltung von Mitarbeitenden und Auftraggebern ermöglichen sowie die
+digitale Erfassung von täglichen Arbeitszeiten durch die Mitarbeitenden. Auf Basis der erfassten
+und freigegebenen Arbeitszeiten sollen automatisiert abrechnungsrelevante Daten bereitgestellt
+und Rechnungen für die Auftraggeber erstellt werden.
+Das Projekt umfasst die Analyse der bestehenden Prozesse, die Planung der Systemarchitektur,
+die Implementierung der Software sowie die Durchführung von Tests und die Dokumentation.
+
+1.2 Ist-Analyse* 
+Derzeit werden die Prozesse in der Firma manuell durchgeführt. Die Arbeitszeiten der
+Mitarbeitenden werden in Papierform oder über unstrukturierte Tabellen erfasst und anschließend manuell ausgewertet.
+Die Verwaltung von Mitarbeitenden, Auftraggebern und Abrechnungsdaten erfolgt ohne zentrales
+System, was zu einem erhöhten Zeitaufwand, Fehleranfälligkeit und mangelnder Transparenz
+führt.
+Eine automatisierte Rechnungsstellung existiert nicht. Die Erstellung der Rechnungen erfolgt
+manuell auf Basis der gesammelten Arbeitszeitdaten.
+Ziel ist es, diese manuellen Prozesse durch eine digitale, strukturierte und zentrale Lösung zu
+ersetzen.
+
+2. Zielsetzung entwickeln / Soll-Konzept***
+2.1 Was soll am Ende des Projektes erreicht sein?*
+Am Ende des Projektes soll ein funktionsfähiges webbasiertes Softwaresystem zur Verfügung
+stehen, das die Verwaltung von Mitarbeitenden und Auftraggebern ermöglicht und eine digitale
+Erfassung von täglichen Arbeitszeiten durch Mitarbeitende bietet.
+Die erfassten Arbeitszeiten sollen durch die Verwaltung geprüft und freigegeben werden können
+und anschließend als Grundlage für eine automatisierte Rechnungserstellung dienen.
+Das System soll die Arbeitsabläufe in der Firma effizienter gestalten, Fehler reduzieren und die
+Transparenz erhöhen.
+
+2.2 Welche Anforderungen müssen erfüllt sein?*
+Funktionale Anforderungen:
+Verwaltung von Mitarbeitenden (Anlegen, Bearbeiten, Deaktivieren)
+Verwaltung von Auftraggebern
+Digitale Erfassung täglicher Arbeitszeiten durch Mitarbeitende
+Prüfung und Freigabe der Arbeitszeiten durch die Verwaltung
+Automatisierte Berechnung der Abrechnungsgrundlagen
+Erstellung von Rechnungen als PDF
+Nicht-funktionale Anforderungen:
+Webbasierte Nutzung über gängige Browser
+Benutzerfreundliche und übersichtliche Oberfläche
+Rollenbasierte Zugriffskontrolle (Admin / Mitarbeiter)
+Datenspeicherung in einer relationalen Datenbank
+Einhaltung grundlegender Datenschutzanforderungen (DSGVO)
+
+2.3 Welche Einschränkungen müssen berücksichtigt werden?*
+Das Projekt ist zeitlich auf den von der IHK vorgegebenen Rahmen von maximal 80 Stunden
+begrenzt.
+Der Funktionsumfang wird auf die wesentlichen Kernfunktionen beschränkt, um die
+Realisierbarkeit innerhalb der Projektzeit sicherzustellen.
+Externe Schnittstellen, mobile native Apps oder komplexe Abrechnungssysteme sind nicht
+Bestandteil dieses Projektes.
+Die Umsetzung erfolgt mit den im Ausbildungsbetrieb verfügbaren technischen Ressourcen.
+
+3. Projektstrukturplan entwickeln***
+3.1 Was ist zur Erfüllung der Zielsetzung erforderlich?*
+Analyse der fachlichen Anforderungen
+Planung der Systemarchitektur
+Auswahl geeigneter Technologien
+Entwurf der Datenbankstruktur
+Implementierung der Backend-Logik
+Entwicklung der Benutzeroberfläche
+Testen der Anwendung
+Erstellung der Projektdokumentation
+
+3.2 Hauptaufgaben auflisten*
+Anforderungsanalyse
+Projektplanung
+Software-Design
+Implementierung
+Testphase
+Dokumentation und Projektabschluss
+
+3.3 Teilaufgaben auflisten*
+Analyse der Ist-Situation
+Definition der Soll-Prozesse
+Erstellung eines Datenbankmodells
+Entwicklung des Admin-Bereichs
+Entwicklung der Zeiterfassungsfunktion
+Implementierung der Rechnungslogik
+Durchführung von Funktionstests
+Fehlerkorrekturen
+Erstellung der technischen und fachlichen Dokumentation
+
+4. Projektphasen mit Zeitplanung in Stunden*
+
+-Analysephase (10 Stunden)
+
+Ist-Analyse der bestehenden Prozesse: 4 h
+
+Erhebung und Dokumentation der funktionalen Anforderungen: 4 h
+
+Abstimmung der Anforderungen mit dem Auftraggeber: 2 h
+
+
+-Planungsphase (10 Stunden)
+
+Entwicklung des Soll-Konzeptes gemäß Projektziel: 4 h
+
+Entwurf der Systemarchitektur (Webanwendung mit relationaler Datenbank): 3 h
+
+Erstellung des Datenbankmodells: 3 h
+
+
+-Implementierungsphase (40 Stunden)
+
+Implementierung der Datenbankstruktur: 4 h
+
+Entwicklung der Verwaltungsfunktion für Mitarbeitende: 6 h
+
+Entwicklung der Verwaltungsfunktion für Auftraggeber: 4 h
+
+Implementierung der rollenbasierten Zugriffskontrolle (Admin / Mitarbeiter): 6 h
+
+Entwicklung der digitalen Zeiterfassungsfunktion: 8 h
+
+Implementierung der Prüf- und Freigabefunktion für Arbeitszeiten: 4 h
+
+Implementierung der automatisierten Abrechnungslogik: 4 h
+
+Erstellung der Rechnungen im PDF-Format: 4 h
+
+
+-Testphase (10 Stunden)
+
+Erstellung von Testfällen: 3 h
+
+Durchführung funktionaler Tests: 4 h
+
+Fehleranalyse und Optimierung: 3 h
+
+
+-Dokumentation (10 Stunden)
+
+Technische Dokumentation: 5 h
+
+Anwenderdokumentation: 3 h
+
+Abschluss und Aufbereitung der Projektdokumentation: 2 h
