@@ -19,6 +19,7 @@
 
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
+use App\Http\Controllers\Admin\MitarbeiterController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -38,11 +39,10 @@ Route::get('/', function () {
 |--------------------------------------------------------------------------
 | Nach dem Login landet der Benutzer auf /dashboard.
 | Von hier wird er automatisch zum rollenspezifischen Dashboard weitergeleitet:
-| - Admin    -> /admin/dashboard
+| - Admin       -> /admin/dashboard
 | - Mitarbeiter -> /mitarbeiter/dashboard
 */
 Route::get('/dashboard', function () {
-    // Rollenbasierte Weiterleitung nach dem Login
     if (auth()->user()->isAdmin()) {
         return redirect()->route('admin.dashboard');
     }
@@ -55,17 +55,18 @@ Route::get('/dashboard', function () {
 |--------------------------------------------------------------------------
 | Alle Routen in dieser Gruppe sind nur fuer Administratoren zugaenglich.
 | Middleware 'admin' prueft die Rolle des angemeldeten Benutzers.
-|
-| Hier werden spaeter folgende Bereiche hinzugefuegt:
-| - Mitarbeiterverwaltung
-| - Auftraggeberverwaltung
-| - Zeitfreigabe
-| - Rechnungsverwaltung
 */
 Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(function () {
 
     // Admin-Dashboard: Uebersicht mit Kennzahlen
     Route::get('/dashboard', [AdminDashboard::class, 'index'])->name('dashboard');
+
+    // Mitarbeiterverwaltung: Anlegen, Bearbeiten, Deaktivieren
+    Route::resource('mitarbeiter', MitarbeiterController::class);
+
+    // Mitarbeiter deaktivieren/reaktivieren (toggle)
+    Route::patch('/mitarbeiter/{mitarbeiter}/toggle', [MitarbeiterController::class, 'destroy'])
+        ->name('mitarbeiter.toggle');
 
 });
 
@@ -74,10 +75,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 | Mitarbeiter-Bereich (/mitarbeiter/*)
 |--------------------------------------------------------------------------
 | Alle Routen in dieser Gruppe sind nur fuer Mitarbeitende zugaenglich.
-| Middleware 'mitarbeiter' prueft die Rolle des angemeldeten Benutzers.
-|
-| Hier werden spaeter folgende Bereiche hinzugefuegt:
-| - Eigene Zeiterfassung (Anzeige und Erfassung)
 */
 Route::middleware(['auth', 'mitarbeiter'])->prefix('mitarbeiter')->name('mitarbeiter.')->group(function () {
 
@@ -93,7 +90,6 @@ Route::middleware(['auth', 'mitarbeiter'])->prefix('mitarbeiter')->name('mitarbe
 | Profilverwaltung (/profile)
 |--------------------------------------------------------------------------
 | Fuer alle angemeldeten Benutzer (Admin und Mitarbeiter).
-| Ermoeglicht das Bearbeiten und Loeschen des eigenen Kontos.
 */
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
@@ -105,6 +101,5 @@ Route::middleware('auth')->group(function () {
 |--------------------------------------------------------------------------
 | Authentifizierungsrouten (von Laravel Breeze generiert)
 |--------------------------------------------------------------------------
-| Enthaelt: Login, Logout, Registrierung, Passwort-Reset, E-Mail-Verifizierung
 */
 require __DIR__.'/auth.php';
