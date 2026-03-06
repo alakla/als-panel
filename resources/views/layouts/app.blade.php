@@ -17,6 +17,42 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarMain">
+                {{-- Hauptnavigation: rollenabhaengige Links --}}
+                <ul class="navbar-nav me-auto">
+                    @if(Auth::user()->isAdmin())
+                        {{-- Admin-Navigation --}}
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
+                               href="{{ route('admin.dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.mitarbeiter.*') ? 'active' : '' }}"
+                               href="{{ route('admin.mitarbeiter.index') }}">Mitarbeiter</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.auftraggeber.*') ? 'active' : '' }}"
+                               href="{{ route('admin.auftraggeber.index') }}">Auftraggeber</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.zeitfreigabe.*') ? 'active' : '' }}"
+                               href="{{ route('admin.zeitfreigabe.index') }}">Zeitfreigabe</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.rechnungen.*') ? 'active' : '' }}"
+                               href="{{ route('admin.rechnungen.index') }}">Rechnungen</a>
+                        </li>
+                    @else
+                        {{-- Mitarbeiter-Navigation --}}
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('mitarbeiter.dashboard') ? 'active' : '' }}"
+                               href="{{ route('mitarbeiter.dashboard') }}">Dashboard</a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('mitarbeiter.zeiterfassung.*') ? 'active' : '' }}"
+                               href="{{ route('mitarbeiter.zeiterfassung.index') }}">Zeiterfassung</a>
+                        </li>
+                    @endif
+                </ul>
                 <ul class="navbar-nav ms-auto">
                     <li class="nav-item dropdown">
                         <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown">

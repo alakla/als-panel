@@ -8,8 +8,10 @@ use Illuminate\Database\Eloquent\Model;
  * Rechnung-Model
  *
  * Repraesentiert eine erstellte Rechnung fuer einen Auftraggeber.
- * Die Rechnung enthaelt Nettobetrag, MwSt und Gesamtbetrag
- * sowie den Pfad zur generierten PDF-Datei.
+ * Die Rechnung wird basierend auf freigegebenen Zeiteintraegen berechnet:
+ * Nettobetrag = Gesamtstunden * Stundensatz des Auftraggebers
+ * MwSt = Nettobetrag * 0.19 (19%)
+ * Gesamtbetrag = Nettobetrag + MwSt
  *
  * Datenbankname wird explizit angegeben.
  */
@@ -24,16 +26,19 @@ class Rechnung extends Model
         'auftraggeber_id',
         'zeitraum_von',
         'zeitraum_bis',
+        'rechnungsdatum',
         'nettobetrag',
         'mwst_betrag',
         'gesamtbetrag',
+        'status',
         'pdf_pfad',
     ];
 
     // Automatische Typumwandlung fuer Datumsfelder
     protected $casts = [
-        'zeitraum_von' => 'date',
-        'zeitraum_bis' => 'date',
+        'zeitraum_von'   => 'date',
+        'zeitraum_bis'   => 'date',
+        'rechnungsdatum' => 'date',
     ];
 
     /**

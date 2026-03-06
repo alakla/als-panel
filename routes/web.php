@@ -20,6 +20,11 @@
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MitarbeiterController;
+use App\Http\Controllers\Admin\AuftraggeberController;
+use App\Http\Controllers\Admin\ZeitfreigabeController;
+use App\Http\Controllers\Admin\RechnungController;
+use App\Http\Controllers\Mitarbeiter\DashboardController as MitarbeiterDashboard;
+use App\Http\Controllers\Mitarbeiter\ZeiterfassungController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -68,6 +73,30 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/mitarbeiter/{mitarbeiter}/toggle', [MitarbeiterController::class, 'destroy'])
         ->name('mitarbeiter.toggle');
 
+    // Auftraggeberverwaltung: Anlegen, Bearbeiten, Deaktivieren
+    Route::resource('auftraggeber', AuftraggeberController::class);
+
+    // Auftraggeber deaktivieren/reaktivieren (toggle)
+    Route::patch('/auftraggeber/{auftraggeber}/toggle', [AuftraggeberController::class, 'destroy'])
+        ->name('auftraggeber.toggle');
+
+    // Zeitfreigabe: Admin-Bereich fuer Genehmigung/Ablehnung von Zeiteintraegen
+    Route::get('/zeitfreigabe', [ZeitfreigabeController::class, 'index'])->name('zeitfreigabe.index');
+    Route::post('/zeitfreigabe/{zeiterfassung}/freigeben', [ZeitfreigabeController::class, 'freigeben'])
+        ->name('zeitfreigabe.freigeben');
+    Route::post('/zeitfreigabe/{zeiterfassung}/ablehnen', [ZeitfreigabeController::class, 'ablehnen'])
+        ->name('zeitfreigabe.ablehnen');
+    Route::post('/zeitfreigabe/massenfreigabe', [ZeitfreigabeController::class, 'massenfreigabe'])
+        ->name('zeitfreigabe.massenfreigabe');
+
+    // Rechnungsverwaltung: Erstellen, Anzeigen, PDF herunterladen
+    Route::resource('rechnungen', RechnungController::class)
+        ->only(['index', 'create', 'store', 'show'])
+        ->parameters(['rechnungen' => 'rechnung']);
+    Route::post('/rechnungen/vorschau', [RechnungController::class, 'vorschau'])->name('rechnungen.vorschau');
+    Route::get('/rechnungen/{rechnung}/download', [RechnungController::class, 'download'])->name('rechnungen.download');
+    Route::post('/rechnungen/{rechnung}/bezahlt', [RechnungController::class, 'alsBezahlt'])->name('rechnungen.bezahlt');
+
 });
 
 /*
@@ -78,10 +107,11 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
 */
 Route::middleware(['auth', 'mitarbeiter'])->prefix('mitarbeiter')->name('mitarbeiter.')->group(function () {
 
-    // Mitarbeiter-Dashboard: Eigene Zeiteintraege und Status
-    Route::get('/dashboard', function () {
-        return view('mitarbeiter.dashboard');
-    })->name('dashboard');
+    // Mitarbeiter-Dashboard: Eigene Kennzahlen und letzte Eintraege
+    Route::get('/dashboard', [MitarbeiterDashboard::class, 'index'])->name('dashboard');
+
+    // Zeiterfassung: Mitarbeitende erfassen ihre eigenen Arbeitszeiten
+    Route::resource('zeiterfassung', ZeiterfassungController::class)->except(['show']);
 
 });
 

@@ -27,7 +27,7 @@
                     <div class="fs-1 text-primary opacity-25">&#128100;</div>
                 </div>
                 <div class="card-footer bg-transparent border-0 pt-0">
-                    <a href="#" class="small text-decoration-none">Alle anzeigen &rarr;</a>
+                    <a href="{{ route('admin.mitarbeiter.index') }}" class="small text-decoration-none">Alle anzeigen &rarr;</a>
                 </div>
             </div>
         </div>
@@ -43,7 +43,7 @@
                     <div class="fs-1 text-success opacity-25">&#127970;</div>
                 </div>
                 <div class="card-footer bg-transparent border-0 pt-0">
-                    <a href="#" class="small text-decoration-none">Alle anzeigen &rarr;</a>
+                    <a href="{{ route('admin.auftraggeber.index') }}" class="small text-decoration-none">Alle anzeigen &rarr;</a>
                 </div>
             </div>
         </div>
@@ -88,10 +88,10 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white fw-semibold">Schnellzugriff</div>
                 <div class="card-body d-flex gap-2 flex-wrap">
-                    <a href="#" class="btn btn-outline-primary btn-sm">+ Mitarbeiter anlegen</a>
-                    <a href="#" class="btn btn-outline-success btn-sm">+ Auftraggeber anlegen</a>
-                    <a href="#" class="btn btn-outline-warning btn-sm">Zeitfreigabe</a>
-                    <a href="#" class="btn btn-outline-danger btn-sm">Rechnung erstellen</a>
+                    <a href="{{ route('admin.mitarbeiter.create') }}" class="btn btn-outline-primary btn-sm">+ Mitarbeiter anlegen</a>
+                    <a href="{{ route('admin.auftraggeber.create') }}" class="btn btn-outline-success btn-sm">+ Auftraggeber anlegen</a>
+                    <a href="{{ route('admin.zeitfreigabe.index') }}" class="btn btn-outline-warning btn-sm">Zeitfreigabe</a>
+                    <a href="{{ route('admin.rechnungen.create') }}" class="btn btn-outline-danger btn-sm">Rechnung erstellen</a>
                 </div>
             </div>
         </div>
