@@ -26,6 +26,11 @@ class Mitarbeiter extends Model
         'status',
     ];
 
+    // Automatische Typumwandlung: einstellungsdatum wird als Carbon-Datum behandelt
+    protected $casts = [
+        'einstellungsdatum' => 'date',
+    ];
+
     /**
      * Beziehung zum Benutzerkonto (1:1)
      * Jeder Mitarbeiter hat genau ein Login-Konto.

@@ -1,6 +1,24 @@
 <!DOCTYPE html>
-{{-- PDF-Template fuer Rechnungen --}}
-{{-- Wird von DomPDF gerendert und als PDF gespeichert --}}
+{{--
+    PDF-Template fuer Rechnungen
+    ============================
+    Dieses Template wird von der DomPDF-Bibliothek (barryvdh/laravel-dompdf)
+    in eine PDF-Datei umgewandelt und unter storage/app/rechnungen/JJJJ/ gespeichert.
+
+    Wichtige Hinweise fuer DomPDF:
+    - Kein Bootstrap oder externe CSS-Frameworks: DomPDF unterstuetzt nur
+      inline CSS und interne <style>-Bloecke
+    - Schriftart: DejaVu Sans (in DomPDF eingebaut, unterstuetzt Sonderzeichen)
+    - Kein JavaScript: DomPDF fuehrt kein JS aus
+    - Float-Layouts funktionieren mit clearfix-Technik
+    - Seitenformat: A4 Portrait (in RechnungController::generierePdf gesetzt)
+
+    Verfuegbare Variablen (uebergeben von RechnungController::generierePdf):
+    - $rechnung:       Rechnung-Model (mit Netto, MwSt, Gesamt, Zeitraum)
+    - $auftraggeber:   Auftraggeber-Model (Firmenname, Adresse, Stundensatz)
+    - $zeiterfassungen: Collection der freigegebenen Zeiteintraege
+    - $gesamtstunden:  Summe aller Arbeitsstunden (float)
+--}}
 <html lang="de">
 <head>
     <meta charset="UTF-8">

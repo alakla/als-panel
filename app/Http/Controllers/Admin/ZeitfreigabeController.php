@@ -35,29 +35,39 @@ class ZeitfreigabeController extends Controller
      */
     public function index(): View
     {
-        // Filter-Parameter aus der URL lesen
+        // Filter-Parameter aus der URL lesen.
+        // Standard: 'offen' beim ersten Besuch.
+        // 'alle' = kein Statusfilter (alle Eintraege anzeigen).
         $status         = request('status', 'offen');
         $mitarbeiterId  = request('mitarbeiter_id');
         $auftraggeberId = request('auftraggeber_id');
-        $monat          = request('monat');
+        // Standard: aktueller Monat im Format Y-m (z.B. 2026-03)
+        $monat          = request('monat', now()->format('Y-m'));
 
-        // Zeiteintraege mit allen relevanten Beziehungen laden
-        $zeiterfassungen = Zeiterfassung::with(['mitarbeiter.user', 'auftraggeber'])
-            ->when($status, function ($query) use ($status) {
-                $query->where('status', $status);
-            })
-            ->when($mitarbeiterId, function ($query) use ($mitarbeiterId) {
-                $query->where('mitarbeiter_id', $mitarbeiterId);
-            })
-            ->when($auftraggeberId, function ($query) use ($auftraggeberId) {
-                $query->where('auftraggeber_id', $auftraggeberId);
-            })
-            ->when($monat, function ($query) use ($monat) {
-                $query->whereYear('datum', substr($monat, 0, 4))
-                      ->whereMonth('datum', substr($monat, 5, 2));
-            })
-            ->orderByDesc('datum')
-            ->paginate(25);
+        $query = Zeiterfassung::with(['mitarbeiter.user', 'auftraggeber']);
+
+        // Status-Filter: 'alle' bedeutet kein Filter – sonst nach Status filtern
+        if ($status !== 'alle') {
+            $query->where('status', $status);
+        }
+
+        // Mitarbeiter-Filter
+        if ($mitarbeiterId) {
+            $query->where('mitarbeiter_id', $mitarbeiterId);
+        }
+
+        // Auftraggeber-Filter
+        if ($auftraggeberId) {
+            $query->where('auftraggeber_id', $auftraggeberId);
+        }
+
+        // Monats-Filter
+        if ($monat) {
+            $query->whereYear('datum', substr($monat, 0, 4))
+                  ->whereMonth('datum', substr($monat, 5, 2));
+        }
+
+        $zeiterfassungen = $query->orderByDesc('datum')->paginate(25);
 
         // Dropdown-Daten fuer die Filter laden
         $mitarbeiter  = Mitarbeiter::with('user')->orderBy('id')->get();

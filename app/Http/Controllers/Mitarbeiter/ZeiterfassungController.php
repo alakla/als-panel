@@ -189,10 +189,13 @@ class ZeiterfassungController extends Controller
     }
 
     /**
-     * Hilfsmethode: Prueft, ob der angemeldete Mitarbeitende Eigentuemerdes Eintrags ist.
-     * Bricht mit 403 ab, wenn der Eintrag einem anderen Mitarbeitenden gehoert.
+     * Hilfsmethode: Prueft, ob der angemeldete Mitarbeitende Eigentuemer des Eintrags ist.
      *
-     * @param  \App\Models\Zeiterfassung  $zeiterfassung
+     * Wird in edit(), update() und destroy() aufgerufen, um sicherzustellen,
+     * dass kein Mitarbeitender die Eintraege eines anderen einsehen oder veraendern kann.
+     * Bricht mit HTTP 403 (Forbidden) ab, falls der Eintrag nicht dem Eingeloggten gehoert.
+     *
+     * @param  \App\Models\Zeiterfassung  $zeiterfassung  Der zu pruefende Eintrag
      */
     private function authorizeEntry(Zeiterfassung $zeiterfassung): void
     {

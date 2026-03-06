@@ -59,7 +59,7 @@
                     <div class="fs-1 text-warning opacity-25">&#9201;</div>
                 </div>
                 <div class="card-footer bg-transparent border-0 pt-0">
-                    <a href="#" class="small text-decoration-none">Freigeben &rarr;</a>
+                    <a href="{{ route('admin.zeitfreigabe.index') }}" class="small text-decoration-none">Freigeben &rarr;</a>
                 </div>
             </div>
         </div>
@@ -75,7 +75,7 @@
                     <div class="fs-1 text-danger opacity-25">&#128196;</div>
                 </div>
                 <div class="card-footer bg-transparent border-0 pt-0">
-                    <a href="#" class="small text-decoration-none">Alle anzeigen &rarr;</a>
+                    <a href="{{ route('admin.rechnungen.index') }}" class="small text-decoration-none">Alle anzeigen &rarr;</a>
                 </div>
             </div>
         </div>
