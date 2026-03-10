@@ -12,8 +12,7 @@ use Illuminate\View\View;
  * AuftraggeberController – Verwaltung der Auftraggeber (CRUD)
  *
  * Verwaltet alle Kundenunternehmen, an die Mitarbeitende vermittelt werden.
- * Der Stundensatz jedes Auftraggebers wird spaeter fuer die
- * automatisierte Rechnungsstellung verwendet.
+ * Der Stundensatz wird pro Taetigkeit verwaltet (nicht mehr beim Auftraggeber).
  *
  * Zugriff: Nur Administratoren (Middleware: auth + admin)
  */
@@ -68,7 +67,6 @@ class AuftraggeberController extends Controller
             'adresse'         => $request->adresse,
             'email'           => $request->email,
             'telefon'         => $request->telefon,
-            'stundensatz'     => $request->stundensatz,
             'is_active'       => true,
         ]);
 

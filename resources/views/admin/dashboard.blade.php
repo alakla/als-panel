@@ -8,10 +8,26 @@
             <h4 class="fw-bold">Dashboard</h4>
             <p class="text-muted mb-0">Willkommen, {{ Auth::user()->name }}</p>
         </div>
-        <div class="col-auto">
+        <div class="col-auto d-flex align-items-center gap-2">
             <span class="badge bg-primary">Administrator</span>
+            <span class="text-muted small">
+                Aktualisierung in <span id="refreshCountdown" class="fw-semibold">60</span>s
+                <a href="{{ request()->fullUrl() }}" class="ms-1 text-decoration-none">&#8635;</a>
+            </span>
         </div>
     </div>
+
+    <script>
+        (function () {
+            var sekunden = 60;
+            var anzeige  = document.getElementById('refreshCountdown');
+            var intervall = setInterval(function () {
+                sekunden--;
+                if (anzeige) anzeige.textContent = sekunden;
+                if (sekunden <= 0) { clearInterval(intervall); window.location.reload(); }
+            }, 1000);
+        })();
+    </script>
 
     {{-- KPI-Karten: Wichtigste Kennzahlen auf einen Blick --}}
     <div class="row g-3 mb-4">
@@ -53,13 +69,13 @@
             <div class="card border-0 shadow-sm h-100">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
-                        <p class="text-muted small mb-1">Offene Zeiteintraege</p>
+                        <p class="text-muted small mb-1">Offene Auftraege</p>
                         <h3 class="fw-bold mb-0 text-warning">{{ $offeneZeiteintraege }}</h3>
                     </div>
                     <div class="fs-1 text-warning opacity-25">&#9201;</div>
                 </div>
                 <div class="card-footer bg-transparent border-0 pt-0">
-                    <a href="{{ route('admin.zeitfreigabe.index') }}" class="small text-decoration-none">Freigeben &rarr;</a>
+                    <a href="{{ route('admin.auftraege.index', ['status' => 'bestaetigt']) }}" class="small text-decoration-none">Freigeben &rarr;</a>
                 </div>
             </div>
         </div>
@@ -90,7 +106,7 @@
                 <div class="card-body d-flex gap-2 flex-wrap">
                     <a href="{{ route('admin.mitarbeiter.create') }}" class="btn btn-outline-primary btn-sm">+ Mitarbeiter anlegen</a>
                     <a href="{{ route('admin.auftraggeber.create') }}" class="btn btn-outline-success btn-sm">+ Auftraggeber anlegen</a>
-                    <a href="{{ route('admin.zeitfreigabe.index') }}" class="btn btn-outline-warning btn-sm">Zeitfreigabe</a>
+                    <a href="{{ route('admin.auftraege.index', ['status' => 'bestaetigt']) }}" class="btn btn-outline-warning btn-sm">Zeitfreigabe</a>
                     <a href="{{ route('admin.rechnungen.create') }}" class="btn btn-outline-danger btn-sm">Rechnung erstellen</a>
                 </div>
             </div>

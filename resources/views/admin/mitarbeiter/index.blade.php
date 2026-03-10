@@ -8,23 +8,39 @@
             <h4 class="fw-bold mb-0">Mitarbeiterverwaltung</h4>
             <p class="text-muted small mb-0">Alle Mitarbeitenden verwalten</p>
         </div>
-        <div class="col-auto">
+        <div class="col-auto d-flex align-items-center gap-2">
+            <span class="text-muted small">
+                Aktualisierung in <span id="refreshCountdown" class="fw-semibold">60</span>s
+                <a href="{{ request()->fullUrl() }}" class="ms-1 text-decoration-none">&#8635;</a>
+            </span>
             <a href="{{ route('admin.mitarbeiter.create') }}" class="btn btn-primary">
                 + Neuer Mitarbeiter
             </a>
         </div>
     </div>
 
+    <script>
+        (function () {
+            var sekunden = 60;
+            var anzeige  = document.getElementById('refreshCountdown');
+            var intervall = setInterval(function () {
+                sekunden--;
+                if (anzeige) anzeige.textContent = sekunden;
+                if (sekunden <= 0) { clearInterval(intervall); window.location.reload(); }
+            }, 1000);
+        })();
+    </script>
+
     {{-- Suchformular --}}
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
-            <form method="GET" action="{{ route('admin.mitarbeiter.index') }}" class="row g-2">
+            <form method="GET" action="{{ route('admin.mitarbeiter.index') }}" class="row g-2" id="suchformMitarbeiter">
                 <div class="col-md-8">
-                    <input type="text" name="suche" value="{{ $suche }}"
-                        class="form-control" placeholder="Suche nach Name, E-Mail oder Personalnummer...">
+                    <input type="text" name="suche" id="sucheInput" value="{{ $suche }}"
+                        class="form-control" placeholder="Suche nach Name, E-Mail oder Personalnummer..."
+                        oninput="debounceSubmit('suchformMitarbeiter')">
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-outline-primary">Suchen</button>
                     @if($suche)
                         <a href="{{ route('admin.mitarbeiter.index') }}" class="btn btn-outline-secondary">Zuruecksetzen</a>
                     @endif
@@ -59,9 +75,9 @@
                             <td>
                                 {{-- Statusanzeige als Badge --}}
                                 @if($ma->status === 'aktiv')
-                                    <span class="badge bg-success">Aktiv</span>
+                                    <span class="badge badge-status bg-success">Aktiv</span>
                                 @else
-                                    <span class="badge bg-secondary">Inaktiv</span>
+                                    <span class="badge badge-status bg-secondary">Inaktiv</span>
                                 @endif
                             </td>
                             <td class="text-end">
@@ -76,7 +92,7 @@
                                 {{-- Deaktivieren / Reaktivieren --}}
                                 <form method="POST" action="{{ route('admin.mitarbeiter.toggle', $ma) }}"
                                     class="d-inline"
-                                    onsubmit="return confirm('Status wirklich aendern?')">
+                                    data-confirm="Status wirklich aendern?" data-confirm-btn="danger">
                                     @csrf
                                     @method('PATCH')
                                     <button type="submit"

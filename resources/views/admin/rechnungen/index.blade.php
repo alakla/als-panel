@@ -9,13 +9,29 @@
             <h4 class="fw-bold mb-0">Rechnungen</h4>
             <p class="text-muted small mb-0">Alle erstellten Rechnungen verwalten</p>
         </div>
-        <div class="col-auto">
+        <div class="col-auto d-flex align-items-center gap-2">
+            <span class="text-muted small">
+                Aktualisierung in <span id="refreshCountdown" class="fw-semibold">60</span>s
+                <a href="{{ request()->fullUrl() }}" class="ms-1 text-decoration-none">&#8635;</a>
+            </span>
             {{-- Startet den Zwei-Schritt-Prozess: Parameter → Vorschau → Erstellen --}}
             <a href="{{ route('admin.rechnungen.create') }}" class="btn btn-primary">
                 + Neue Rechnung erstellen
             </a>
         </div>
     </div>
+
+    <script>
+        (function () {
+            var sekunden = 60;
+            var anzeige  = document.getElementById('refreshCountdown');
+            var intervall = setInterval(function () {
+                sekunden--;
+                if (anzeige) anzeige.textContent = sekunden;
+                if (sekunden <= 0) { clearInterval(intervall); window.location.reload(); }
+            }, 1000);
+        })();
+    </script>
 
     {{-- Rechnungstabelle: Alle Rechnungen, neueste zuerst (orderBy created_at desc via latest()) --}}
     <div class="card border-0 shadow-sm">
@@ -64,12 +80,12 @@
                             {{-- Zahlungsstatus als farbiges Badge --}}
                             <td>
                                 @if($rechnung->status === 'bezahlt')
-                                    <span class="badge bg-success">Bezahlt</span>
+                                    <span class="badge badge-status bg-success">Bezahlt</span>
                                 @elseif($rechnung->status === 'storniert')
-                                    <span class="badge bg-danger">Storniert</span>
+                                    <span class="badge badge-status bg-danger">Storniert</span>
                                 @else
                                     {{-- Standardstatus direkt nach Rechnungserstellung --}}
-                                    <span class="badge bg-warning text-dark">Offen</span>
+                                    <span class="badge badge-status bg-warning text-dark">Offen</span>
                                 @endif
                             </td>
 

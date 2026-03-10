@@ -60,17 +60,6 @@
                                 @error('adresse') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
 
-                            <div class="col-md-4">
-                                <label for="stundensatz" class="form-label">Stundensatz (€) <span class="text-danger">*</span></label>
-                                <div class="input-group">
-                                    <input type="number" id="stundensatz" name="stundensatz"
-                                        value="{{ old('stundensatz', $auftraggeber->stundensatz) }}"
-                                        step="0.01" min="0"
-                                        class="form-control @error('stundensatz') is-invalid @enderror" required>
-                                    <span class="input-group-text">€/Std.</span>
-                                    @error('stundensatz') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                </div>
-                            </div>
                         </div>
 
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">

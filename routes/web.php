@@ -21,10 +21,12 @@ use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\Admin\DashboardController as AdminDashboard;
 use App\Http\Controllers\Admin\MitarbeiterController;
 use App\Http\Controllers\Admin\AuftraggeberController;
-use App\Http\Controllers\Admin\ZeitfreigabeController;
 use App\Http\Controllers\Admin\RechnungController;
+use App\Http\Controllers\Admin\TaetigkeitController;
+use App\Http\Controllers\Admin\AuftragController;
 use App\Http\Controllers\Mitarbeiter\DashboardController as MitarbeiterDashboard;
 use App\Http\Controllers\Mitarbeiter\ZeiterfassungController;
+use App\Http\Controllers\Mitarbeiter\AuftragController as MitarbeiterAuftragController;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -80,15 +82,6 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::patch('/auftraggeber/{auftraggeber}/toggle', [AuftraggeberController::class, 'destroy'])
         ->name('auftraggeber.toggle');
 
-    // Zeitfreigabe: Admin-Bereich fuer Genehmigung/Ablehnung von Zeiteintraegen
-    Route::get('/zeitfreigabe', [ZeitfreigabeController::class, 'index'])->name('zeitfreigabe.index');
-    Route::post('/zeitfreigabe/{zeiterfassung}/freigeben', [ZeitfreigabeController::class, 'freigeben'])
-        ->name('zeitfreigabe.freigeben');
-    Route::post('/zeitfreigabe/{zeiterfassung}/ablehnen', [ZeitfreigabeController::class, 'ablehnen'])
-        ->name('zeitfreigabe.ablehnen');
-    Route::post('/zeitfreigabe/massenfreigabe', [ZeitfreigabeController::class, 'massenfreigabe'])
-        ->name('zeitfreigabe.massenfreigabe');
-
     // Rechnungsverwaltung: Erstellen, Anzeigen, PDF herunterladen
     Route::resource('rechnungen', RechnungController::class)
         ->only(['index', 'create', 'store', 'show'])
@@ -96,6 +89,20 @@ Route::middleware(['auth', 'admin'])->prefix('admin')->name('admin.')->group(fun
     Route::post('/rechnungen/vorschau', [RechnungController::class, 'vorschau'])->name('rechnungen.vorschau');
     Route::get('/rechnungen/{rechnung}/download', [RechnungController::class, 'download'])->name('rechnungen.download');
     Route::post('/rechnungen/{rechnung}/bezahlt', [RechnungController::class, 'alsBezahlt'])->name('rechnungen.bezahlt');
+
+    // Taetigkeitenverwaltung: Vordefinierte Beschreibungen fuer Zeiterfassung
+    Route::resource('taetigkeiten', TaetigkeitController::class)
+        ->only(['index', 'store', 'update', 'destroy'])
+        ->parameters(['taetigkeiten' => 'taetigkeit']);
+
+    // Auftragsverwaltung: Admin sendet, verwaltet und gibt Auftraege frei
+    Route::get('/auftraege', [AuftragController::class, 'index'])->name('auftraege.index');
+    Route::get('/auftraege/create', [AuftragController::class, 'create'])->name('auftraege.create');
+    Route::post('/auftraege', [AuftragController::class, 'store'])->name('auftraege.store');
+    Route::delete('/auftraege/{auftrag}', [AuftragController::class, 'destroy'])->name('auftraege.destroy');
+    Route::post('/auftraege/{auftrag}/freigeben', [AuftragController::class, 'freigeben'])->name('auftraege.freigeben');
+    Route::post('/auftraege/{auftrag}/ablehnen', [AuftragController::class, 'ablehnen'])->name('auftraege.ablehnen');
+    Route::post('/auftraege/massenfreigabe', [AuftragController::class, 'massenfreigabe'])->name('auftraege.massenfreigabe');
 
 });
 
@@ -110,8 +117,9 @@ Route::middleware(['auth', 'mitarbeiter'])->prefix('mitarbeiter')->name('mitarbe
     // Mitarbeiter-Dashboard: Eigene Kennzahlen und letzte Eintraege
     Route::get('/dashboard', [MitarbeiterDashboard::class, 'index'])->name('dashboard');
 
-    // Zeiterfassung: Mitarbeitende erfassen ihre eigenen Arbeitszeiten
-    Route::resource('zeiterfassung', ZeiterfassungController::class)->except(['show']);
+    // Auftraege: Mitarbeitende sehen ihre Auftraege und koennen sie bestaetigen
+    Route::get('/auftraege', [MitarbeiterAuftragController::class, 'index'])->name('auftraege.index');
+    Route::patch('/auftraege/{auftrag}/bestaetigen', [MitarbeiterAuftragController::class, 'bestaetigen'])->name('auftraege.bestaetigen');
 
 });
 

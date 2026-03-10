@@ -36,15 +36,15 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" action="{{ route('mitarbeiter.zeiterfassung.index') }}" class="row g-2 align-items-end">
-                {{-- Monatsfilter --}}
+                {{-- Monatsfilter: submit bei Aenderung --}}
                 <div class="col-md-4">
                     <label class="form-label small text-muted">Monat</label>
-                    <input type="month" name="monat" value="{{ $monat }}" class="form-control">
+                    <input type="month" name="monat" value="{{ $monat }}" class="form-control" onchange="this.form.submit()">
                 </div>
-                {{-- Auftraggeberfilter --}}
+                {{-- Auftraggeberfilter: submit bei Aenderung --}}
                 <div class="col-md-4">
                     <label class="form-label small text-muted">Auftraggeber</label>
-                    <select name="auftraggeber_id" class="form-select">
+                    <select name="auftraggeber_id" class="form-select" onchange="this.form.submit()">
                         <option value="">Alle Auftraggeber</option>
                         @foreach($auftraggeber as $ag)
                             <option value="{{ $ag->id }}" {{ $auftraggeberId == $ag->id ? 'selected' : '' }}>
@@ -54,20 +54,11 @@
                     </select>
                 </div>
                 <div class="col-auto">
-                    <button type="submit" class="btn btn-outline-primary">Filtern</button>
                     <a href="{{ route('mitarbeiter.zeiterfassung.index') }}" class="btn btn-outline-secondary">Zuruecksetzen</a>
                 </div>
             </form>
         </div>
     </div>
-
-    {{-- Erfolgsmeldung nach Aktionen --}}
-    @if(session('success'))
-        <div class="alert alert-success alert-dismissible fade show" role="alert">
-            {{ session('success') }}
-            <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
-        </div>
-    @endif
 
     {{-- Liste der Zeiteintraege --}}
     <div class="card border-0 shadow-sm">
@@ -79,7 +70,7 @@
                         <th>Auftraggeber</th>
                         <th>Stunden</th>
                         <th>Beschreibung</th>
-                        <th>Status</th>
+                        <th style="width:110px">Status</th>
                         <th class="text-end">Aktionen</th>
                     </tr>
                 </thead>
@@ -92,14 +83,14 @@
                             <td class="text-muted small">
                                 {{ $ze->beschreibung ? Str::limit($ze->beschreibung, 50) : '–' }}
                             </td>
-                            <td>
-                                {{-- Statusanzeige als farbiges Badge --}}
+                            <td style="width:110px">
+                                {{-- Statusanzeige als farbiges Badge mit einheitlicher Breite --}}
                                 @if($ze->status === 'freigegeben')
-                                    <span class="badge bg-success">Freigegeben</span>
+                                    <span class="badge bg-success badge-status">Freigegeben</span>
                                 @elseif($ze->status === 'abgelehnt')
-                                    <span class="badge bg-danger">Abgelehnt</span>
+                                    <span class="badge bg-danger badge-status">Abgelehnt</span>
                                 @else
-                                    <span class="badge bg-warning text-dark">Offen</span>
+                                    <span class="badge bg-warning text-dark badge-status">Offen</span>
                                 @endif
                             </td>
                             <td class="text-end">
@@ -110,7 +101,7 @@
                                     <form method="POST"
                                           action="{{ route('mitarbeiter.zeiterfassung.destroy', $ze) }}"
                                           class="d-inline"
-                                          onsubmit="return confirm('Diesen Eintrag wirklich loeschen?')">
+                                          data-confirm="Diesen Eintrag wirklich loeschen?" data-confirm-btn="danger">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="btn btn-sm btn-outline-danger">Loeschen</button>
@@ -138,5 +129,29 @@
             </div>
         @endif
     </div>
+
+    {{-- Auto-Refresh alle 60 Sekunden (wird bei Benutzerinteraktion pausiert) --}}
+    <script>
+        (function () {
+            var refreshInterval = 60; // Sekunden
+            var remaining = refreshInterval;
+            var paused = false;
+
+            // Refresh pausieren, wenn Benutzer mit der Seite interagiert
+            document.addEventListener('mousemove', function () { paused = true; clearTimeout(pauseTimer); pauseTimer = setTimeout(function () { paused = false; }, 10000); });
+            document.addEventListener('keydown',   function () { paused = true; clearTimeout(pauseTimer); pauseTimer = setTimeout(function () { paused = false; }, 10000); });
+            var pauseTimer;
+
+            var timer = setInterval(function () {
+                if (!paused) {
+                    remaining--;
+                    if (remaining <= 0) {
+                        clearInterval(timer);
+                        window.location.reload();
+                    }
+                }
+            }, 1000);
+        })();
+    </script>
 
 </x-app-layout>

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Admin;
 
 use App\Http\Controllers\Controller;
 use App\Models\Auftraggeber;
+use App\Models\Auftrag;
 use App\Models\Mitarbeiter;
 use App\Models\Zeiterfassung;
 use Illuminate\Http\RedirectResponse;
@@ -97,10 +98,16 @@ class ZeitfreigabeController extends Controller
 
         // Freigabe speichern: Status, freigebender Admin und Zeitstempel
         $zeiterfassung->update([
-            'status'         => 'freigegeben',
+            'status'          => 'freigegeben',
             'freigegeben_von' => auth()->id(),
             'freigegeben_am'  => now(),
         ]);
+
+        // Dazugehoerigen Auftrag ebenfalls auf 'freigegeben' setzen
+        Auftrag::where('mitarbeiter_id', $zeiterfassung->mitarbeiter_id)
+            ->whereDate('datum', $zeiterfassung->datum)
+            ->where('status', 'bestaetigt')
+            ->update(['status' => 'freigegeben']);
 
         return back()->with('success', 'Zeiteintrag wurde freigegeben.');
     }
@@ -128,6 +135,12 @@ class ZeitfreigabeController extends Controller
             'freigegeben_am'  => now(),
         ]);
 
+        // Dazugehoerigen Auftrag ebenfalls auf 'abgelehnt' setzen
+        Auftrag::where('mitarbeiter_id', $zeiterfassung->mitarbeiter_id)
+            ->whereDate('datum', $zeiterfassung->datum)
+            ->where('status', 'bestaetigt')
+            ->update(['status' => 'abgelehnt']);
+
         return back()->with('success', 'Zeiteintrag wurde abgelehnt.');
     }
 
@@ -145,6 +158,11 @@ class ZeitfreigabeController extends Controller
             'eintraege.*' => ['integer', 'exists:zeiterfassungen,id'],
         ]);
 
+        // Betroffene Zeiterfassungen vorher laden (fuer Auftrag-Synchronisierung)
+        $betroffene = Zeiterfassung::whereIn('id', $request->eintraege)
+            ->where('status', 'offen')
+            ->get(['mitarbeiter_id', 'datum']);
+
         // Alle ausgewaehlten offenen Eintraege auf einmal freigeben
         $anzahl = Zeiterfassung::whereIn('id', $request->eintraege)
             ->where('status', 'offen')
@@ -153,6 +171,14 @@ class ZeitfreigabeController extends Controller
                 'freigegeben_von' => auth()->id(),
                 'freigegeben_am'  => now(),
             ]);
+
+        // Dazugehoerige Auftraege ebenfalls auf 'freigegeben' setzen
+        foreach ($betroffene as $ze) {
+            Auftrag::where('mitarbeiter_id', $ze->mitarbeiter_id)
+                ->whereDate('datum', $ze->datum)
+                ->where('status', 'bestaetigt')
+                ->update(['status' => 'freigegeben']);
+        }
 
         return back()->with('success', "{$anzahl} Zeiteintrag/Eintraege wurden freigegeben.");
     }

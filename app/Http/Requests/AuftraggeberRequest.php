@@ -9,8 +9,7 @@ use Illuminate\Validation\Rule;
  * AuftraggeberRequest – Validierung der Auftraggeber-Formulardaten
  *
  * Validiert alle Eingaben beim Anlegen und Bearbeiten eines Auftraggebers.
- * Der Stundensatz ist besonders wichtig, da er die Grundlage
- * fuer die automatisierte Rechnungsstellung bildet.
+ * Der Stundensatz wird jetzt pro Taetigkeit verwaltet (nicht mehr hier).
  *
  * Zugriff: Nur Administratoren
  */
@@ -52,9 +51,6 @@ class AuftraggeberRequest extends FormRequest
             // Telefon: Optional
             'telefon'         => ['nullable', 'string', 'max:50'],
 
-            // Stundensatz: Pflichtfeld, numerisch (Grundlage fuer Abrechnung)
-            'stundensatz'     => ['required', 'numeric', 'min:0'],
-
             // Status: Aktiv oder Inaktiv
             'is_active'       => ['boolean'],
         ];
@@ -73,9 +69,6 @@ class AuftraggeberRequest extends FormRequest
             'adresse.required'         => 'Die Adresse ist ein Pflichtfeld.',
             'email.required'           => 'Die E-Mail-Adresse ist ein Pflichtfeld.',
             'email.email'              => 'Bitte eine gueltige E-Mail-Adresse eingeben.',
-            'stundensatz.required'     => 'Der Stundensatz ist ein Pflichtfeld.',
-            'stundensatz.numeric'      => 'Der Stundensatz muss eine Zahl sein.',
-            'stundensatz.min'          => 'Der Stundensatz darf nicht negativ sein.',
         ];
     }
 }

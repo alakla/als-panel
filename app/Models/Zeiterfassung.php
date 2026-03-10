@@ -21,6 +21,7 @@ class Zeiterfassung extends Model
     protected $fillable = [
         'mitarbeiter_id',
         'auftraggeber_id',
+        'taetigkeit_id',    // Referenz zur Taetigkeit (fuer Stundensatz bei Rechnung)
         'datum',
         'stunden',
         'beschreibung',
@@ -51,6 +52,15 @@ class Zeiterfassung extends Model
     public function auftraggeber()
     {
         return $this->belongsTo(Auftraggeber::class);
+    }
+
+    /**
+     * Beziehung zur Taetigkeit (n:1)
+     * Gibt die Taetigkeit zurueck – wird fuer den Stundensatz in der Rechnung benoetigt.
+     */
+    public function taetigkeit()
+    {
+        return $this->belongsTo(Taetigkeit::class);
     }
 
     /**

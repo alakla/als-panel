@@ -1,2 +1,15 @@
 // Bootstrap
 @import 'bootstrap/scss/bootstrap';
+
+
+// Kalender-Picker-Indikator wiederherstellen (von Bootstrap-Reset versteckt)
+input[type="date"],
+input[type="month"],
+input[type="week"],
+input[type="time"] {
+    &::-webkit-calendar-picker-indicator {
+        display: block !important;
+        opacity: 0.6;
+        cursor: pointer;
+    }
+}

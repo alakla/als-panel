@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Mitarbeiter;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ZeiterfassungRequest;
 use App\Models\Auftraggeber;
+use App\Models\Taetigkeit;
 use App\Models\Zeiterfassung;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\View\View;
@@ -83,7 +84,10 @@ class ZeiterfassungController extends Controller
         // Nur aktive Auftraggeber anzeigen (inaktive koennen keine Stunden buchen)
         $auftraggeber = Auftraggeber::where('is_active', true)->orderBy('firmenname')->get();
 
-        return view('mitarbeiter.zeiterfassung.create', compact('auftraggeber'));
+        // Vordefinierte Taetigkeiten aus der Datenbank laden (vom Admin verwaltbar)
+        $taetigkeiten = Taetigkeit::orderBy('reihenfolge')->orderBy('name')->get();
+
+        return view('mitarbeiter.zeiterfassung.create', compact('auftraggeber', 'taetigkeiten'));
     }
 
     /**
@@ -137,7 +141,10 @@ class ZeiterfassungController extends Controller
         // Aktive Auftraggeber fuer das Dropdown laden
         $auftraggeber = Auftraggeber::where('is_active', true)->orderBy('firmenname')->get();
 
-        return view('mitarbeiter.zeiterfassung.edit', compact('zeiterfassung', 'auftraggeber'));
+        // Vordefinierte Taetigkeiten aus der Datenbank laden
+        $taetigkeiten = Taetigkeit::orderBy('reihenfolge')->orderBy('name')->get();
+
+        return view('mitarbeiter.zeiterfassung.edit', compact('zeiterfassung', 'auftraggeber', 'taetigkeiten'));
     }
 
     /**

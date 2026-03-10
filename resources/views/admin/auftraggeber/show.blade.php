@@ -21,7 +21,7 @@
                 @method('PATCH')
                 @if($auftraggeber->is_active)
                     <button type="submit" class="btn btn-outline-danger btn-sm"
-                        onclick="return confirm('Auftraggeber wirklich deaktivieren?')">
+                        data-confirm="Auftraggeber wirklich deaktivieren?" data-confirm-btn="danger">
                         Deaktivieren
                     </button>
                 @else
@@ -66,16 +66,12 @@
                             <td>{{ $auftraggeber->adresse }}</td>
                         </tr>
                         <tr>
-                            <td class="text-muted">Stundensatz</td>
-                            <td class="fw-semibold">{{ number_format($auftraggeber->stundensatz, 2, ',', '.') }} €/Std.</td>
-                        </tr>
-                        <tr>
                             <td class="text-muted">Status</td>
                             <td>
                                 @if($auftraggeber->is_active)
-                                    <span class="badge bg-success">Aktiv</span>
+                                    <span class="badge badge-status bg-success">Aktiv</span>
                                 @else
-                                    <span class="badge bg-secondary">Inaktiv</span>
+                                    <span class="badge badge-status bg-secondary">Inaktiv</span>
                                 @endif
                             </td>
                         </tr>
@@ -107,11 +103,11 @@
                                     <td>
                                         {{-- Statusanzeige als farbiges Badge --}}
                                         @if($ze->status === 'freigegeben')
-                                            <span class="badge bg-success">Freigegeben</span>
+                                            <span class="badge badge-status bg-success">Freigegeben</span>
                                         @elseif($ze->status === 'abgelehnt')
-                                            <span class="badge bg-danger">Abgelehnt</span>
+                                            <span class="badge badge-status bg-danger">Abgelehnt</span>
                                         @else
-                                            <span class="badge bg-warning text-dark">Offen</span>
+                                            <span class="badge badge-status bg-warning text-dark">Offen</span>
                                         @endif
                                     </td>
                                 </tr>
@@ -148,11 +144,11 @@
                                     <td>{{ number_format($rechnung->gesamtbetrag, 2, ',', '.') }} €</td>
                                     <td>
                                         @if($rechnung->status === 'bezahlt')
-                                            <span class="badge bg-success">Bezahlt</span>
+                                            <span class="badge badge-status bg-success">Bezahlt</span>
                                         @elseif($rechnung->status === 'storniert')
-                                            <span class="badge bg-danger">Storniert</span>
+                                            <span class="badge badge-status bg-danger">Storniert</span>
                                         @else
-                                            <span class="badge bg-warning text-dark">Offen</span>
+                                            <span class="badge badge-status bg-warning text-dark">Offen</span>
                                         @endif
                                     </td>
                                 </tr>

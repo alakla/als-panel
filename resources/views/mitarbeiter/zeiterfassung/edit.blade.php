@@ -68,7 +68,7 @@
                                 <div class="input-group">
                                     <input type="number" id="stunden" name="stunden"
                                         value="{{ old('stunden', $zeiterfassung->stunden) }}"
-                                        step="0.5" min="0.5" max="24"
+                                        step="0.5" min="0.5" max="12"
                                         class="form-control @error('stunden') is-invalid @enderror" required>
                                     <span class="input-group-text">Std.</span>
                                     @error('stunden')
@@ -77,17 +77,59 @@
                                 </div>
                             </div>
 
-                            {{-- Taetigkeitsbeschreibung (optional) --}}
+                            {{-- Taetigkeitsbeschreibung: Auswahl aus DB-Vorgaben (vom Admin verwaltbar) oder eigene Eingabe --}}
                             <div class="col-12">
-                                <label for="beschreibung" class="form-label">Taetigkeitsbeschreibung</label>
-                                <textarea id="beschreibung" name="beschreibung" rows="3"
+                                @php
+                                    // Aktuellen Wert ermitteln (nach Validierungsfehler: old(), sonst DB-Wert)
+                                    $aktuellerWert = old('beschreibung', $zeiterfassung->beschreibung);
+
+                                    // Namen der Vorgaben aus der DB-Collection extrahieren
+                                    $vorgabenNamen = $taetigkeiten->pluck('name')->toArray();
+
+                                    // Pruefen ob der gespeicherte Wert einer Vorgabe entspricht
+                                    $istVorgabe = in_array($aktuellerWert, $vorgabenNamen);
+                                @endphp
+
+                                <label class="form-label">Taetigkeitsbeschreibung <span class="text-muted fw-normal small">(optional)</span></label>
+
+                                {{-- Dropdown: vorhandenen Wert vorauswaehlen falls moeglich --}}
+                                <select id="beschreibung_auswahl" class="form-select mb-2"
+                                        onchange="handleBeschreibungAuswahl(this)">
+                                    <option value="" {{ !$aktuellerWert ? 'selected' : '' }}>— Keine Angabe —</option>
+                                    @foreach($taetigkeiten as $t)
+                                        <option value="{{ $t->name }}" {{ $aktuellerWert === $t->name ? 'selected' : '' }}>
+                                            {{ $t->name }}
+                                        </option>
+                                    @endforeach
+                                    <option value="sonstiges" {{ ($aktuellerWert && !$istVorgabe) ? 'selected' : '' }}>
+                                        Sonstiges (eigene Eingabe)...
+                                    </option>
+                                </select>
+
+                                {{-- Freitextfeld: nur sichtbar wenn "Sonstiges" ausgewaehlt --}}
+                                <textarea id="beschreibung" name="beschreibung" rows="2"
                                     class="form-control @error('beschreibung') is-invalid @enderror"
-                                    placeholder="Was haben Sie heute gemacht? (optional)">{{ old('beschreibung', $zeiterfassung->beschreibung) }}</textarea>
+                                    placeholder="Bitte Taetigkeit beschreiben..."
+                                    style="{{ ($aktuellerWert && !$istVorgabe) ? '' : 'display:none' }}">{{ $aktuellerWert }}</textarea>
                                 @error('beschreibung')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
-                                <div class="form-text">Maximal 500 Zeichen. Optional.</div>
+                                <div class="form-text">Maximal 500 Zeichen.</div>
                             </div>
+
+                            <script>
+                            function handleBeschreibungAuswahl(select) {
+                                const textarea = document.getElementById('beschreibung');
+                                if (select.value === 'sonstiges') {
+                                    textarea.style.display = 'block';
+                                    textarea.value = '';
+                                    textarea.focus();
+                                } else {
+                                    textarea.style.display = 'none';
+                                    textarea.value = select.value;
+                                }
+                            }
+                            </script>
 
                         </div>
 

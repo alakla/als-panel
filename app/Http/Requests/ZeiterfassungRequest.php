@@ -36,8 +36,8 @@ class ZeiterfassungRequest extends FormRequest
             // Datum muss ein gueltiges Datum sein (nicht in der Zukunft)
             'datum'           => ['required', 'date', 'before_or_equal:today'],
 
-            // Stunden: Dezimalzahl zwischen 0.5 und 24
-            'stunden'         => ['required', 'numeric', 'min:0.5', 'max:24'],
+            // Stunden: Dezimalzahl zwischen 0.5 und 12
+            'stunden'         => ['required', 'numeric', 'min:0.5', 'max:12'],
 
             // Taetigkeitsbeschreibung: optional, max. 500 Zeichen
             'beschreibung'    => ['nullable', 'string', 'max:500'],
@@ -58,7 +58,7 @@ class ZeiterfassungRequest extends FormRequest
             'stunden.required'         => 'Die Stundenanzahl ist erforderlich.',
             'stunden.numeric'          => 'Die Stundenanzahl muss eine Zahl sein.',
             'stunden.min'              => 'Es muessen mindestens 0,5 Stunden eingetragen werden.',
-            'stunden.max'              => 'Es koennen maximal 24 Stunden pro Tag eingetragen werden.',
+            'stunden.max'              => 'Es koennen maximal 12 Stunden pro Tag eingetragen werden.',
             'beschreibung.max'         => 'Die Beschreibung darf maximal 500 Zeichen lang sein.',
         ];
     }

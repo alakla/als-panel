@@ -2,6 +2,19 @@
 {{-- Zugriff: Nur Administratoren --}}
 <x-app-layout>
 
+    {{-- Erfolgsmeldung nach Erstellung – PDF wird automatisch heruntergeladen --}}
+    @if(session('auto_download') && $rechnung->pdf_pfad)
+        <div class="alert alert-success mb-4 shadow-sm" role="alert">
+            <strong>Rechnung {{ $rechnung->rechnungsnummer }} wurde erfolgreich erstellt.</strong>
+            Das PDF wird automatisch heruntergeladen.
+        </div>
+        {{-- window.location.href navigiert zum Download-Link ohne Seitenwechsel --}}
+        {{-- Chrome erlaubt diese Art der Navigation (kein Popup-Blocker) --}}
+        <script>
+            window.location.href = '{{ route('admin.rechnungen.download', $rechnung) }}';
+        </script>
+    @endif
+
     {{-- Seitenkopf --}}
     <div class="row mb-4 align-items-center">
         <div class="col">
@@ -14,7 +27,9 @@
         <div class="col-auto d-flex gap-2">
             {{-- PDF herunterladen --}}
             @if($rechnung->pdf_pfad)
-                <a href="{{ route('admin.rechnungen.download', $rechnung) }}" class="btn btn-outline-secondary btn-sm">
+                <a id="btn-pdf-download"
+                   href="{{ route('admin.rechnungen.download', $rechnung) }}"
+                   class="btn btn-outline-secondary btn-sm">
                     PDF herunterladen
                 </a>
             @endif
@@ -77,11 +92,11 @@
                             <td class="text-muted">Status</td>
                             <td>
                                 @if($rechnung->status === 'bezahlt')
-                                    <span class="badge bg-success fs-6">Bezahlt</span>
+                                    <span class="badge badge-status bg-success fs-6">Bezahlt</span>
                                 @elseif($rechnung->status === 'storniert')
-                                    <span class="badge bg-danger fs-6">Storniert</span>
+                                    <span class="badge badge-status bg-danger fs-6">Storniert</span>
                                 @else
-                                    <span class="badge bg-warning text-dark fs-6">Offen</span>
+                                    <span class="badge badge-status bg-warning text-dark fs-6">Offen</span>
                                 @endif
                             </td>
                         </tr>
@@ -111,10 +126,6 @@
                         <tr>
                             <td class="text-muted">Adresse</td>
                             <td>{{ $rechnung->auftraggeber->adresse }}</td>
-                        </tr>
-                        <tr>
-                            <td class="text-muted">Stundensatz</td>
-                            <td>{{ number_format($rechnung->auftraggeber->stundensatz, 2, ',', '.') }} €/Std.</td>
                         </tr>
                     </table>
                 </div>

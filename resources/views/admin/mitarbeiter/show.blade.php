@@ -11,10 +11,26 @@
                 &rsaquo; Details
             </p>
         </div>
-        <div class="col-auto">
+        <div class="col-auto d-flex gap-2">
             <a href="{{ route('admin.mitarbeiter.edit', $mitarbeiter) }}" class="btn btn-outline-primary btn-sm">
                 Bearbeiten
             </a>
+            {{-- Toggle-Formular: Mitarbeiter aktivieren oder deaktivieren --}}
+            <form method="POST" action="{{ route('admin.mitarbeiter.toggle', $mitarbeiter) }}">
+                @csrf
+                @method('PATCH')
+                @if($mitarbeiter->status === 'aktiv')
+                    <button type="submit" class="btn btn-outline-danger btn-sm"
+                        data-confirm="Mitarbeiter wirklich deaktivieren?" data-confirm-btn="danger">
+                        Deaktivieren
+                    </button>
+                @else
+                    <button type="submit" class="btn btn-outline-success btn-sm"
+                        data-confirm="Mitarbeiter wirklich reaktivieren?" data-confirm-btn="success">
+                        Reaktivieren
+                    </button>
+                @endif
+            </form>
         </div>
     </div>
 
@@ -50,9 +66,9 @@
                             <td class="text-muted">Status</td>
                             <td>
                                 @if($mitarbeiter->status === 'aktiv')
-                                    <span class="badge bg-success">Aktiv</span>
+                                    <span class="badge badge-status bg-success">Aktiv</span>
                                 @else
-                                    <span class="badge bg-secondary">Inaktiv</span>
+                                    <span class="badge badge-status bg-secondary">Inaktiv</span>
                                 @endif
                             </td>
                         </tr>
@@ -83,11 +99,11 @@
                                     <td>{{ number_format($ze->stunden, 2, ',', '.') }} Std.</td>
                                     <td>
                                         @if($ze->status === 'freigegeben')
-                                            <span class="badge bg-success">Freigegeben</span>
+                                            <span class="badge badge-status bg-success">Freigegeben</span>
                                         @elseif($ze->status === 'abgelehnt')
-                                            <span class="badge bg-danger">Abgelehnt</span>
+                                            <span class="badge badge-status bg-danger">Abgelehnt</span>
                                         @else
-                                            <span class="badge bg-warning text-dark">Offen</span>
+                                            <span class="badge badge-status bg-warning text-dark">Offen</span>
                                         @endif
                                     </td>
                                 </tr>

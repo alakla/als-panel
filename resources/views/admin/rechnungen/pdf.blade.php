@@ -1,301 +1,408 @@
 <!DOCTYPE html>
 {{--
-    PDF-Template fuer Rechnungen
-    ============================
-    Dieses Template wird von der DomPDF-Bibliothek (barryvdh/laravel-dompdf)
-    in eine PDF-Datei umgewandelt und unter storage/app/rechnungen/JJJJ/ gespeichert.
+    PDF-Template – ALS Dienstleistungen
+    =====================================
+    Dieses Template wird von DomPDF gerendert und als PDF gespeichert.
+    Es verwendet KEIN Bootstrap – nur inline CSS und einen style-Block,
+    da DomPDF keine externe CSS-Dateien laden kann.
 
-    Wichtige Hinweise fuer DomPDF:
-    - Kein Bootstrap oder externe CSS-Frameworks: DomPDF unterstuetzt nur
-      inline CSS und interne <style>-Bloecke
-    - Schriftart: DejaVu Sans (in DomPDF eingebaut, unterstuetzt Sonderzeichen)
-    - Kein JavaScript: DomPDF fuehrt kein JS aus
-    - Float-Layouts funktionieren mit clearfix-Technik
-    - Seitenformat: A4 Portrait (in RechnungController::generierePdf gesetzt)
-
-    Verfuegbare Variablen (uebergeben von RechnungController::generierePdf):
-    - $rechnung:       Rechnung-Model (mit Netto, MwSt, Gesamt, Zeitraum)
-    - $auftraggeber:   Auftraggeber-Model (Firmenname, Adresse, Stundensatz)
-    - $zeiterfassungen: Collection der freigegebenen Zeiteintraege
-    - $gesamtstunden:  Summe aller Arbeitsstunden (float)
+    Uebergebene Variablen (alle kommen aus RechnungController::generierePdf()):
+      $rechnung        - Rechnung-Model (fuer Nummer, Datum, Zeitraum)
+      $positionen      - array, direkt iterierbar (vom Admin bearbeitet)
+      $absender        - string (Absenderzeile unter der Trennlinie)
+      $empfaenger_name - string (Firmenname des Empfaengers)
+      $adresse_zeilen  - array of strings (je eine Zeile der Empfaengeradresse)
+      $anrede          - string
+      $einleitung      - string
+      $zahlungstext    - string (kann mehrere Saetze enthalten)
+      $gruss           - string (kann \n-Zeilenumbrueche enthalten)
+      $footer_firma    - string (kann \n-Zeilenumbrueche enthalten)
+      $footer_kontakt  - string (kann \n-Zeilenumbrueche enthalten)
+      $footer_bank     - string (kann \n-Zeilenumbrueche enthalten)
 --}}
+@php
+    /*
+     * Logo als Base64 einbetten.
+     * DomPDF kann keine externen URLs laden; daher wird das Bild direkt
+     * als Base64-Datenstream im src-Attribut eingebettet.
+     */
+    $logoPfad   = public_path('logo.png');
+    $logoBase64 = file_exists($logoPfad)
+        ? 'data:image/png;base64,' . base64_encode(file_get_contents($logoPfad))
+        : '';
+
+    /*
+     * Zeitraum-Datumsformatierung fuer die Positionstabelle.
+     * $rechnung->zeitraum_von und zeitraum_bis werden als Carbon-Objekte gecastet.
+     * Format: TT.MM.JJ (kurz, passend zur Referenz-PDF)
+     */
+    $zeitraumVon = $rechnung->zeitraum_von->format('d.m.y');
+    $zeitraumBis = $rechnung->zeitraum_bis->format('d.m.y');
+
+    /*
+     * Summen aus den (eventuell vom Admin bearbeiteten) Positionen neu berechnen.
+     * Wir berechnen hier aus den tatsaechlichen Positionsdaten, nicht aus der DB,
+     * damit bearbeitete Preise korrekt in der PDF erscheinen.
+     */
+    $nettoBetragPdf  = array_sum(array_column($positionen, 'gesamtpreis'));
+    $mwstBetragPdf   = $nettoBetragPdf * 0.19;
+    $gesamtBetragPdf = $nettoBetragPdf + $mwstBetragPdf;
+@endphp
 <html lang="de">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Rechnung {{ $rechnung->rechnungsnummer }}</title>
     <style>
-        /* Grundlegendes Layout fuer das PDF */
+        /* ===== RESET ===== */
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+
+        /* ===== SEITE ===== */
         body {
             font-family: DejaVu Sans, sans-serif;
-            font-size: 11pt;
-            color: #333;
-            margin: 0;
-            padding: 0;
+            font-size: 9.5pt;
+            color: #222222;
+            /* Seitenraender: oben/unten gross fuer Header und Footer-Bereich */
+            margin: 20mm 15mm 55mm 15mm;
         }
 
-        /* Kopfbereich mit Firmenlogo und Rechnungstitel */
-        .header {
-            border-bottom: 2px solid #0d6efd;
-            padding-bottom: 15px;
-            margin-bottom: 25px;
+        /* ===== HEADER: "RECHNUNG" + LOGO ===== */
+        table.header {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 5px;
         }
-
-        .firma-name {
-            font-size: 18pt;
-            font-weight: bold;
-            color: #0d6efd;
+        .rechnung-heading {
+            font-size: 32pt;
+            font-weight: normal;
+            color: #c8c8c8;       /* Hellgrau */
+            letter-spacing: 3px;
+            line-height: 1;
+            vertical-align: bottom;
         }
-
-        .firma-info {
-            font-size: 9pt;
-            color: #666;
-        }
-
-        .rechnung-titel {
-            font-size: 16pt;
-            font-weight: bold;
+        .logo-zelle {
             text-align: right;
-            color: #333;
+            vertical-align: bottom;
+        }
+        .logo-zelle img {
+            width: 115px;
+            height: auto;
         }
 
-        /* Adressblock: Absender und Empfaenger nebeneinander */
-        .adressen {
-            margin-bottom: 25px;
+        /* ===== BLAUE TRENNLINIE ===== */
+        hr.linie {
+            border: none;
+            border-top: 2px solid #0d6efd;
+            margin: 6px 0 30px 0;
         }
 
+        /* ===== ABSENDER-MINITEXT (blau, klein) ===== */
         .absender {
-            float: left;
-            width: 48%;
+            font-size: 7.5pt;
+            color: #0d6efd;
+            margin-bottom: 16px;
         }
 
+        /* ===== EMPFAENGER-ADRESSBLOCK ===== */
         .empfaenger {
-            float: right;
-            width: 48%;
-        }
-
-        .clearfix::after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-
-        /* Rechnungsdetails (Nummer, Datum, Zeitraum) */
-        .rechnungs-info {
-            background: #f8f9fa;
-            padding: 12px;
-            border-radius: 4px;
-            margin-bottom: 25px;
-            font-size: 10pt;
-        }
-
-        .rechnungs-info table {
-            width: 100%;
-            border-collapse: collapse;
-        }
-
-        .rechnungs-info td {
-            padding: 3px 8px;
-        }
-
-        .rechnungs-info .label {
-            color: #666;
-            width: 40%;
-        }
-
-        /* Positionstabelle der Zeiteintraege */
-        .positionen {
-            width: 100%;
-            border-collapse: collapse;
-            margin-bottom: 20px;
-        }
-
-        .positionen th {
-            background: #0d6efd;
-            color: white;
-            padding: 8px 10px;
-            text-align: left;
-            font-size: 10pt;
-        }
-
-        .positionen th.rechts {
-            text-align: right;
-        }
-
-        .positionen td {
-            padding: 7px 10px;
-            border-bottom: 1px solid #dee2e6;
-            font-size: 10pt;
-        }
-
-        .positionen td.rechts {
-            text-align: right;
-        }
-
-        .positionen tr:nth-child(even) {
-            background: #f8f9fa;
-        }
-
-        /* Summentabelle: Netto, MwSt, Gesamt */
-        .summen {
-            float: right;
-            width: 45%;
-            border-collapse: collapse;
-        }
-
-        .summen td {
-            padding: 5px 10px;
-            font-size: 11pt;
-        }
-
-        .summen .label {
-            color: #666;
-        }
-
-        .summen .gesamt {
             font-weight: bold;
+            font-size: 10.5pt;
+            line-height: 2;
+            margin-bottom: 32px;
+        }
+
+        /* ===== RECHNUNGS-INFO (Nummer + Datum) ===== */
+        table.rech-info {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 16px;
+        }
+        .rech-nr {
             font-size: 13pt;
             color: #0d6efd;
-            border-top: 2px solid #0d6efd;
+        }
+        .rech-nr strong {
+            font-weight: bold;
+        }
+        .rech-datum {
+            font-size: 10.5pt;
+            text-align: right;
+            vertical-align: middle;
         }
 
-        /* Bankverbindung und Fussnote */
-        .fusszeile {
-            margin-top: 50px;
-            padding-top: 15px;
-            border-top: 1px solid #dee2e6;
+        /* ===== ANREDE + EINLEITUNG ===== */
+        p.anrede     { margin: 14px 0 4px 0;  font-size: 9.5pt; }
+        p.einleitung { margin: 0 0 14px 0;    font-size: 9.5pt; }
+
+        /* ===== POSITIONEN-TABELLE ===== */
+        table.pos {
+            width: 100%;
+            border-collapse: collapse;
             font-size: 9pt;
-            color: #666;
+            margin-bottom: 0;
+        }
+        table.pos thead tr th {
+            border-top: 2px solid #0d6efd;
+            border-bottom: 2px solid #0d6efd;
+            padding: 6px 7px;
+            font-weight: bold;
+            text-align: left;
+            /* rgba(13,110,253,0.18) auf weissem Hintergrund ≈ #d3e5ff */
+            background-color: #d3e5ff;
+        }
+        table.pos thead tr th.r { text-align: right; }
+
+        table.pos tbody tr td {
+            padding: 6px 7px;
+            border-bottom: 1px solid #dddddd;
+        }
+        table.pos tbody tr td.r { text-align: right; }
+
+        /* Zebrastreifen: gerade/ungerade Zeilen */
+        table.pos tbody tr.ungerade td { background-color: #ffffff; }
+        table.pos tbody tr.gerade   td { background-color: #f5f7fa; }
+
+        /* Abschlusslinie der Tabelle */
+        table.pos tfoot tr td {
+            border-top: 1.5px solid #888;
+            padding: 0;
+            height: 1px;
+        }
+
+        /* ===== SUMMENBLOCK (volle Breite, Platzhalter links) ===== */
+        table.summen {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 9.5pt;
+            margin-top: 2px;
+        }
+        table.summen tr td {
+            padding: 4px 8px;
+        }
+        table.summen tr td.leer     { width: 55%; }
+        table.summen tr td.lab      { color: #555555; }
+        table.summen tr td.val      { text-align: right; font-weight: bold; width: 120px; }
+        table.summen tr td.val-normal { text-align: right; width: 120px; }
+        table.summen tr.gesamt td {
+            border-top: 2px solid #0d6efd;
+            background-color: #d3e5ff;
+            font-weight: bold;
+            font-size: 10.5pt;
+            padding-top: 6px;
+        }
+        table.summen tr.gesamt td.val-gesamt { text-align: right; width: 120px; }
+
+        /* ===== ZAHLUNGSTEXT + GRUSS ===== */
+        .zahlungstext {
+            font-size: 9.5pt;
+            line-height: 1.6;
+            margin: 28px 0 20px 0;
+        }
+        .gruss {
+            font-size: 9.5pt;
+            line-height: 1.9;
+        }
+
+        /* ===== FOOTER: fixiert am unteren Seitenrand ===== */
+        .footer {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 7px 15mm 8px 15mm;
+            bottom: 10mm;
+            border-top: 2px solid #0d6efd;
+            background-color: #ffffff;
+            font-size: 7.5pt;
+            color: #444444;
+        }
+        table.footer-cols {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        table.footer-cols td {
+            vertical-align: top;
+            width: 33%;
+            padding-right: 10px;
+            line-height: 1.6;
+        }
+        .footer-head {
+            font-weight: bold;
+            margin-bottom: 2px;
         }
     </style>
 </head>
 <body>
 
-    {{-- Kopfbereich: Absenderinformationen und Rechnungstitel --}}
-    <div class="header clearfix">
-        <div style="float:left">
-            <div class="firma-name">ALS Personaldienstleistungen GmbH</div>
-            <div class="firma-info">
-                Musterstrasse 1 &bull; 12345 Musterstadt<br>
-                Tel: +49 (0) 123 456789 &bull; info@als-personal.de<br>
-                USt-IdNr.: DE123456789
-            </div>
-        </div>
-        <div style="float:right; text-align:right">
-            <div class="rechnung-titel">RECHNUNG</div>
-            <div style="color:#666; font-size:10pt">{{ $rechnung->rechnungsnummer }}</div>
-        </div>
-    </div>
+{{-- ====== KOPFZEILE: "RECHNUNG" + LOGO ====== --}}
+<table class="header">
+    <tr>
+        <td class="rechnung-heading" style="width:60%">RECHNUNG</td>
+        <td class="logo-zelle" style="width:40%">
+            @if($logoBase64)
+                {{-- Logo als Base64-Datenstream (DomPDF-kompatibel) --}}
+                <img src="{{ $logoBase64 }}" alt="ALS Dienstleistungen">
+            @else
+                {{-- Fallback: Textrepraesentation des Logos --}}
+                <span style="font-size:22pt; font-weight:bold; color:#0d6efd; letter-spacing:3px;">ALS</span><br>
+                <span style="font-size:7pt; color:#0d6efd; letter-spacing:2px;">DIENSTLEISTUNGEN</span>
+            @endif
+        </td>
+    </tr>
+</table>
 
-    {{-- Empfaengeradresse --}}
-    <div class="adressen clearfix">
-        <div class="empfaenger">
-            <strong>{{ $auftraggeber->firmenname }}</strong><br>
-            {{ $auftraggeber->ansprechpartner }}<br>
-            {!! nl2br(e($auftraggeber->adresse)) !!}
-        </div>
-    </div>
+{{-- Blaue Trennlinie --}}
+<hr class="linie">
 
-    {{-- Rechnungsdetails --}}
-    <div class="rechnungs-info">
-        <table>
-            <tr>
-                <td class="label">Rechnungsnummer:</td>
-                <td><strong>{{ $rechnung->rechnungsnummer }}</strong></td>
-                <td class="label">Rechnungsdatum:</td>
-                <td>{{ $rechnung->rechnungsdatum?->format('d.m.Y') }}</td>
-            </tr>
-            <tr>
-                <td class="label">Abrechnungszeitraum:</td>
-                <td colspan="3">
-                    {{ $rechnung->zeitraum_von->format('d.m.Y') }}
-                    bis {{ $rechnung->zeitraum_bis->format('d.m.Y') }}
+{{-- ====== ABSENDERZEILE (blau, klein) ====== --}}
+<div class="absender">
+    {{-- Absender direkt aus dem vom Admin bearbeiteten Formularfeld --}}
+    {{ $absender }}
+</div>
+
+{{-- ====== EMPFAENGER-ADRESSBLOCK ====== --}}
+<div class="empfaenger">
+    {{-- Firmenname des Empfaengers (vom Admin editierbar) --}}
+    {{ $empfaenger_name }}<br>
+    {{-- Jede Adresszeile wird mit <br> getrennt ausgegeben --}}
+    @foreach($adresse_zeilen as $zeile)
+        {{ $zeile }}<br>
+    @endforeach
+</div>
+
+{{-- ====== RECHNUNGS-NR + DATUM ====== --}}
+<table class="rech-info">
+    <tr>
+        <td style="vertical-align:middle;">
+            {{-- Rechnungsnummer aus der Datenbank (nicht editierbar, automatisch vergeben) --}}
+            <span class="rech-nr">Rechnung Nr. <strong>{{ $rechnung->rechnungsnummer }}</strong></span>
+        </td>
+        <td class="rech-datum">
+            {{-- Rechnungsdatum: vom Admin in der Vorschau editierbar --}}
+            Datum: {{ $rechnung->rechnungsdatum?->format('d.m.Y') }}
+        </td>
+    </tr>
+</table>
+
+{{-- ====== ANREDE + EINLEITUNGSTEXT ====== --}}
+<p class="anrede">{{ $anrede }}</p>
+<p class="einleitung">{{ $einleitung }}</p>
+
+{{-- ====== POSITIONEN-TABELLE ====== --}}
+<table class="pos">
+    <thead>
+        <tr>
+            <th style="width:25px">Pos</th>
+            <th>Beschreibung</th>
+            <th style="width:135px; white-space:nowrap;">Zeitraum</th>
+            <th style="width:52px; text-align:center;">Menge</th>
+            <th style="width:58px">Einheit</th>
+            <th class="r" style="width:78px">Einzelpreis</th>
+            <th class="r" style="width:78px">Gesamtpreis</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{--
+            $positionen ist ein einfaches PHP-Array (direkt iterierbar).
+            $loop->even ergibt true fuer gerade Indices (0, 2, 4, ...) -> Klasse 'gerade'
+            Ungerade Indices (1, 3, 5, ...) -> Klasse 'ungerade' (weisser Hintergrund)
+        --}}
+        @foreach($positionen as $i => $pos)
+            <tr class="{{ $loop->even ? 'ungerade' : 'gerade' }}">
+                {{-- Positionsnummer (1-basiert) --}}
+                <td>{{ $i + 1 }}</td>
+                {{-- Beschreibung der Leistung --}}
+                <td>{{ $pos['name'] }}</td>
+                {{-- Zeitraum der Leistung (editierbar aus der Vorschau, oder Standard-Zeitraum) --}}
+                <td style="white-space:nowrap;">{{ $pos['zeitraum'] ?? ($zeitraumVon . ' – ' . $zeitraumBis) }}</td>
+                {{-- Menge: bei Pauschal immer "1" anzeigen --}}
+                <td style="text-align:center; white-space:nowrap;">
+                    @if($pos['einheit'] === 'Pauschal')
+                        1
+                    @else
+                        {{ number_format($pos['menge'], 2, ',', '.') }}
+                    @endif
                 </td>
+                {{-- Einheit: "Pauschal" oder "Std." --}}
+                <td>{{ $pos['einheit'] }}</td>
+                {{-- Einzelpreis formatiert mit Komma als Dezimaltrennzeichen --}}
+                <td class="r">{{ number_format($pos['einzelpreis'], 2, ',', '.') }} &euro;</td>
+                {{-- Gesamtpreis: Menge × Einzelpreis (oder Pauschal = Einzelpreis) --}}
+                <td class="r">{{ number_format($pos['gesamtpreis'], 2, ',', '.') }} &euro;</td>
             </tr>
-        </table>
-    </div>
+        @endforeach
+    </tbody>
+    {{-- Abschliesende Linie unter der Tabelle --}}
+    <tfoot>
+        <tr><td colspan="7"></td></tr>
+    </tfoot>
+</table>
 
-    {{-- Betreff --}}
-    <p>
-        <strong>Betreff: Rechnung fuer erbrachte Personaldienstleistungen</strong><br>
-        gemaess unserem Vertrag berechnen wir Ihnen fuer den Zeitraum
-        {{ $rechnung->zeitraum_von->format('d.m.Y') }} bis {{ $rechnung->zeitraum_bis->format('d.m.Y') }}
-        folgende Leistungen:
-    </p>
+{{-- ====== SUMMENBLOCK (volle Breite, Platzhalter links) ====== --}}
+{{-- Gleiche Struktur wie Vorschau: 3 Spalten, linke 55% leer --}}
+<table class="summen">
+    {{-- Leerzeile als Abstand vor dem Summenblock --}}
+    <tr>
+        <td class="leer"></td>
+        <td style="padding-top:10px;"></td>
+        <td style="padding-top:10px;"></td>
+    </tr>
+    <tr>
+        <td class="leer"></td>
+        <td class="lab">Nettopreis</td>
+        <td class="val">{{ number_format($nettoBetragPdf, 2, ',', '.') }} &euro;</td>
+    </tr>
+    <tr>
+        <td class="leer"></td>
+        <td class="lab">Zzgl. 19% MwSt.</td>
+        <td class="val-normal">{{ number_format($mwstBetragPdf, 2, ',', '.') }} &euro;</td>
+    </tr>
+    {{-- Rechnungsbetrag: volle Breite mit blauer Hintergrundfarbe --}}
+    <tr class="gesamt">
+        <td class="leer"></td>
+        <td>Rechnungsbetrag</td>
+        <td class="val-gesamt">{{ number_format($gesamtBetragPdf, 2, ',', '.') }} &euro;</td>
+    </tr>
+</table>
 
-    {{-- Positionstabelle der Zeiteintraege --}}
-    <table class="positionen">
-        <thead>
-            <tr>
-                <th>Datum</th>
-                <th>Mitarbeiter</th>
-                <th>Beschreibung</th>
-                <th class="rechts">Stunden</th>
-                <th class="rechts">Stundensatz</th>
-                <th class="rechts">Betrag</th>
-            </tr>
-        </thead>
-        <tbody>
-            @foreach($zeiterfassungen as $ze)
-                <tr>
-                    <td>{{ $ze->datum->format('d.m.Y') }}</td>
-                    <td>{{ $ze->mitarbeiter->user->name }}</td>
-                    <td>{{ $ze->beschreibung ?: '–' }}</td>
-                    <td class="rechts">{{ number_format($ze->stunden, 2, ',', '.') }}</td>
-                    <td class="rechts">{{ number_format($auftraggeber->stundensatz, 2, ',', '.') }} €</td>
-                    <td class="rechts">{{ number_format($ze->stunden * $auftraggeber->stundensatz, 2, ',', '.') }} €</td>
-                </tr>
-            @endforeach
-        </tbody>
+{{-- ====== ZAHLUNGSTEXT ====== --}}
+<div class="zahlungstext">
+    {{--
+        nl2br: Zeilenumbrueche (\n) in <br>-Tags umwandeln.
+        e():   HTML-Sonderzeichen escapen (XSS-Schutz).
+        !!:    Ergebnis nicht doppelt escapen (da nl2br HTML zurueckgibt).
+    --}}
+    {{-- "Rechnungsnummer" wird automatisch fett gedruckt --}}
+    {!! str_replace('Rechnungsnummer', '<strong>Rechnungsnummer</strong>', nl2br(e($zahlungstext))) !!}
+</div>
+
+{{-- ====== GRUSS ====== --}}
+<div class="gruss">
+    {{-- nl2br fuer mehrzeiligen Grusstext (z.B. "Mit freundlichen Grüßen\nALS Dienstleistungen") --}}
+    {!! nl2br(e($gruss)) !!}
+</div>
+
+{{-- ====== FOOTER (fixiert am unteren Seitenrand) ====== --}}
+<div class="footer">
+    <table class="footer-cols">
+        <tr>
+            {{-- Spalte 1: Firmenangaben --}}
+            <td>
+                <div class="footer-head">ALS Dienstleistungen</div>
+                {!! nl2br(e($footer_firma)) !!}
+            </td>
+            {{-- Spalte 2: Kontaktdaten --}}
+            <td>
+                <div class="footer-head">Kontakt</div>
+                {!! nl2br(e($footer_kontakt)) !!}
+            </td>
+            {{-- Spalte 3: Bankverbindung (etwas nach rechts verschoben) --}}
+            <td style="padding-left: 24px;">
+                <div class="footer-head">Bankverbindung</div>
+                {!! nl2br(e($footer_bank)) !!}
+            </td>
+        </tr>
     </table>
-
-    {{-- Summentabelle --}}
-    <div class="clearfix">
-        <table class="summen">
-            <tr>
-                <td class="label">Gesamtstunden:</td>
-                <td style="text-align:right">{{ number_format($gesamtstunden, 2, ',', '.') }} Std.</td>
-            </tr>
-            <tr>
-                <td class="label">Nettobetrag:</td>
-                <td style="text-align:right">{{ number_format($rechnung->nettobetrag, 2, ',', '.') }} €</td>
-            </tr>
-            <tr>
-                <td class="label">MwSt. 19%:</td>
-                <td style="text-align:right">{{ number_format($rechnung->mwst_betrag, 2, ',', '.') }} €</td>
-            </tr>
-            <tr class="gesamt">
-                <td class="label">Gesamtbetrag:</td>
-                <td style="text-align:right">{{ number_format($rechnung->gesamtbetrag, 2, ',', '.') }} €</td>
-            </tr>
-        </table>
-    </div>
-
-    {{-- Zahlungshinweis --}}
-    <div style="margin-top: 60px; clear:both;">
-        <p>
-            Bitte ueberweisen Sie den Gesamtbetrag von
-            <strong>{{ number_format($rechnung->gesamtbetrag, 2, ',', '.') }} €</strong>
-            innerhalb von 14 Tagen auf folgendes Konto:
-        </p>
-    </div>
-
-    {{-- Bankverbindung --}}
-    <div style="background:#f8f9fa; padding:10px; border-radius:4px; font-size:10pt">
-        <strong>Bankverbindung:</strong><br>
-        ALS Personaldienstleistungen GmbH &bull;
-        IBAN: DE12 3456 7890 1234 5678 90 &bull;
-        BIC: MUSTBEBB &bull;
-        Musterbank Berlin
-    </div>
-
-    {{-- Fusszeile --}}
-    <div class="fusszeile">
-        <p>
-            Verwendungszweck: {{ $rechnung->rechnungsnummer }}<br>
-            Diese Rechnung wurde maschinell erstellt und ist ohne Unterschrift gueltig.
-        </p>
-    </div>
+</div>
 
 </body>
 </html>

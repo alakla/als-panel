@@ -37,7 +37,6 @@
                                         <option value="{{ $ag->id }}"
                                             {{ old('auftraggeber_id') == $ag->id ? 'selected' : '' }}>
                                             {{ $ag->firmenname }}
-                                            ({{ number_format($ag->stundensatz, 2, ',', '.') }} €/Std.)
                                         </option>
                                     @endforeach
                                 </select>

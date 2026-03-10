@@ -48,4 +48,13 @@ class Mitarbeiter extends Model
     {
         return $this->hasMany(Zeiterfassung::class);
     }
+
+    /**
+     * Beziehung zu den Arbeitsauftraegen (1:n)
+     * Ein Mitarbeiter kann viele zugewiesene Auftraege haben.
+     */
+    public function auftraege()
+    {
+        return $this->hasMany(Auftrag::class);
+    }
 }

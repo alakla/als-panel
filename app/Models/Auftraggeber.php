@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
  * Auftraggeber-Model
  *
  * Repraesentiert ein Kundenunternehmen, an das Mitarbeitende vermittelt werden.
- * Der Stundensatz des Auftraggebers dient als Grundlage fuer die Rechnungsstellung.
+ * Der Stundensatz wird pro Taetigkeit festgelegt (nicht mehr beim Auftraggeber).
  *
  * Datenbankname wird explizit angegeben, da Laravel sonst 'auftraggebers' verwenden wuerde.
  */
@@ -24,7 +24,6 @@ class Auftraggeber extends Model
         'adresse',
         'email',
         'telefon',
-        'stundensatz',
         'is_active',
     ];
 
