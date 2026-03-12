@@ -1,5 +1,5 @@
 {{-- Mitarbeiter-Dashboard --}}
-{{-- Startseite fuer angemeldete Mitarbeitende --}}
+{{-- Startseite für angemeldete Mitarbeitende --}}
 <x-app-layout>
 
     {{-- Seitentitel --}}
@@ -31,12 +31,48 @@
         })();
     </script>
 
+    {{-- Hover-Effekt für KPI-Karten + Benutzerdefinierte Farbe Orange --}}
+    <style>
+        .kpi-karte { transition: background-color .15s ease, box-shadow .15s ease; }
+        .kpi-karte:hover { background-color: #f0f4ff !important; box-shadow: 0 .5rem 1rem rgba(0,0,0,.12) !important; }
+        .text-orange { color: #fd7e14 !important; }
+    </style>
+
     {{-- KPI-Karten --}}
     <div class="row g-3 mb-4">
 
+        {{-- Karte: Ausstehende Aufträge (noch nicht bestätigt) --}}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 kpi-karte"
+                 style="cursor:pointer" onclick="window.location='{{ route('mitarbeiter.auftraege.index') }}?status=gesendet'">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Ausstehende Aufträge</p>
+                        <h3 class="fw-bold mb-0 text-orange">{{ $ausstehend }}</h3>
+                    </div>
+                    <div class="fs-1 text-orange opacity-25">&#128336;</div>
+                </div>
+            </div>
+        </div>
+
+        {{-- Karte: Freigegebene Einträge diesen Monat --}}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100 kpi-karte"
+                 style="cursor:pointer" onclick="window.location='{{ route('mitarbeiter.auftraege.index') }}?status=freigegeben'">
+                <div class="card-body d-flex justify-content-between align-items-center">
+                    <div>
+                        <p class="text-muted small mb-1">Freigegeben ({{ now()->format('M Y') }})</p>
+                        <h3 class="fw-bold mb-0 text-success">{{ $freigegebeneEintraege }}</h3>
+                    </div>
+                    <div class="fs-1 text-success opacity-25">&#10003;</div>
+                </div>
+            </div>
+        </div>
+
         {{-- Karte: Stunden diesen Monat --}}
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100 kpi-karte"
+                 style="cursor:pointer" onclick="window.location='{{ route('mitarbeiter.auftraege.index') }}'">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
                         <p class="text-muted small mb-1">Stunden ({{ now()->format('M Y') }})</p>
@@ -49,43 +85,14 @@
             </div>
         </div>
 
-        {{-- Karte: Ausstehende Auftraege (noch nicht bestaetigt) --}}
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted small mb-1">Ausstehende Auftraege</p>
-                        <h3 class="fw-bold mb-0 text-warning">{{ $ausstehend }}</h3>
-                    </div>
-                    <div class="fs-1 text-warning opacity-25">&#128336;</div>
-                </div>
-                <div class="card-footer bg-transparent border-0 pt-0">
-                    <a href="{{ route('mitarbeiter.auftraege.index') }}" class="small text-decoration-none">Jetzt bestaetigen &rarr;</a>
-                </div>
-            </div>
-        </div>
-
-        {{-- Karte: Freigegebene Eintraege diesen Monat --}}
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm h-100">
-                <div class="card-body d-flex justify-content-between align-items-center">
-                    <div>
-                        <p class="text-muted small mb-1">Freigegeben ({{ now()->format('M Y') }})</p>
-                        <h3 class="fw-bold mb-0 text-success">{{ $freigegebeneEintraege }}</h3>
-                    </div>
-                    <div class="fs-1 text-success opacity-25">&#10003;</div>
-                </div>
-            </div>
-        </div>
-
     </div>
 
-    {{-- Letzte Auftraege --}}
+    {{-- Letzte Aufträge --}}
     <div class="row">
         <div class="col-md-8">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white d-flex justify-content-between align-items-center">
-                    <span class="fw-semibold">Letzte Auftraege</span>
+                    <span class="fw-semibold">Letzte Aufträge</span>
                     <a href="{{ route('mitarbeiter.auftraege.index') }}" class="small text-decoration-none">Alle anzeigen &rarr;</a>
                 </div>
                 <div class="card-body p-0">
@@ -95,7 +102,7 @@
                                 <th>Datum</th>
                                 <th>Auftraggeber</th>
                                 <th>Arbeitszeit</th>
-                                <th>Taetigkeit</th>
+                                <th>Tätigkeit</th>
                                 <th>Status</th>
                             </tr>
                         </thead>
@@ -108,9 +115,9 @@
                                     <td>{{ $auftrag->taetigkeit->name }}</td>
                                     <td>
                                         @if($auftrag->status === 'gesendet')
-                                            <span class="badge badge-status bg-primary">Ausstehend</span>
+                                            <span class="badge badge-status badge-orange">Ausstehend</span>
                                         @elseif($auftrag->status === 'bestaetigt')
-                                            <span class="badge badge-status bg-secondary">Bestaetigt</span>
+                                            <span class="badge badge-status bg-secondary">Bestätigt</span>
                                         @elseif($auftrag->status === 'freigegeben')
                                             <span class="badge badge-status bg-success">Freigegeben</span>
                                         @elseif($auftrag->status === 'abgelehnt')
@@ -121,7 +128,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-3">
-                                        Noch keine Auftraege vorhanden.
+                                        Noch keine Aufträge vorhanden.
                                     </td>
                                 </tr>
                             @endforelse

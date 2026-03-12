@@ -1,4 +1,4 @@
-{{-- Auftraggeberliste – Uebersicht aller Kundenunternehmen --}}
+{{-- Auftraggeberliste – Übersicht aller Kundenunternehmen --}}
 {{-- Zugriff: Nur Administratoren --}}
 <x-app-layout>
 
@@ -42,7 +42,7 @@
                 </div>
                 <div class="col-auto">
                     @if($suche)
-                        <a href="{{ route('admin.auftraggeber.index') }}" class="btn btn-outline-secondary">Zuruecksetzen</a>
+                        <a href="{{ route('admin.auftraggeber.index') }}" class="btn btn-outline-secondary">Zurücksetzen</a>
                     @endif
                 </div>
             </form>
@@ -59,12 +59,13 @@
                         <th>Ansprechpartner</th>
                         <th>E-Mail</th>
                         <th>Status</th>
-                        <th class="text-end">Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($auftraggeber as $ag)
-                        <tr>
+                        {{-- Klick auf Zeile navigiert zur Detailseite --}}
+                        <tr style="cursor:pointer"
+                            onclick="window.location='{{ route('admin.auftraggeber.show', $ag) }}'">
                             <td class="fw-semibold">{{ $ag->firmenname }}</td>
                             <td>{{ $ag->ansprechpartner }}</td>
                             <td>{{ $ag->email }}</td>
@@ -75,26 +76,10 @@
                                     <span class="badge badge-status bg-secondary">Inaktiv</span>
                                 @endif
                             </td>
-                            <td class="text-end">
-                                <a href="{{ route('admin.auftraggeber.show', $ag) }}"
-                                    class="btn btn-sm btn-outline-info">Details</a>
-                                <a href="{{ route('admin.auftraggeber.edit', $ag) }}"
-                                    class="btn btn-sm btn-outline-primary">Bearbeiten</a>
-                                <form method="POST" action="{{ route('admin.auftraggeber.destroy', $ag) }}"
-                                    class="d-inline"
-                                    data-confirm="Status wirklich aendern?" data-confirm-btn="danger">
-                                    @csrf
-                                    @method('DELETE')
-                                    <button type="submit"
-                                        class="btn btn-sm {{ $ag->is_active ? 'btn-outline-danger' : 'btn-outline-success' }}">
-                                        {{ $ag->is_active ? 'Deaktivieren' : 'Reaktivieren' }}
-                                    </button>
-                                </form>
-                            </td>
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="5" class="text-center text-muted py-4">
+                            <td colspan="4" class="text-center text-muted py-4">
                                 Keine Auftraggeber gefunden.
                             </td>
                         </tr>

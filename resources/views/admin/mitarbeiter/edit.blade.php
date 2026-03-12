@@ -28,7 +28,7 @@
                         <h6 class="text-muted mb-3 border-bottom pb-2">Login-Daten</h6>
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label for="name" class="form-label">Vollstaendiger Name <span class="text-danger">*</span></label>
+                                <label for="name" class="form-label">Vollständiger Name <span class="text-danger">*</span></label>
                                 <input type="text" id="name" name="name"
                                     value="{{ old('name', $mitarbeiter->user->name) }}"
                                     class="form-control @error('name') is-invalid @enderror" required>
@@ -49,7 +49,7 @@
                                 <input type="password" id="password" name="password"
                                     class="form-control @error('password') is-invalid @enderror">
                                 @error('password') <div class="invalid-feedback">{{ $message }}</div> @enderror
-                                <div class="form-text">Leer lassen, um das Passwort nicht zu aendern.</div>
+                                <div class="form-text">Leer lassen, um das Passwort nicht zu ändern.</div>
                             </div>
                         </div>
 
@@ -62,6 +62,15 @@
                                     value="{{ old('personalnummer', $mitarbeiter->personalnummer) }}"
                                     class="form-control @error('personalnummer') is-invalid @enderror" required>
                                 @error('personalnummer') <div class="invalid-feedback">{{ $message }}</div> @enderror
+                            </div>
+
+                            <div class="col-md-4">
+                                <label for="telefon" class="form-label">Telefonnummer</label>
+                                <input type="tel" id="telefon" name="telefon"
+                                    value="{{ old('telefon', $mitarbeiter->telefon) }}"
+                                    class="form-control @error('telefon') is-invalid @enderror"
+                                    placeholder="z.B. 0176 12345678">
+                                @error('telefon') <div class="invalid-feedback">{{ $message }}</div> @enderror
                             </div>
 
                             <div class="col-md-4">
@@ -87,7 +96,7 @@
                         {{-- Formular-Buttons --}}
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                             <a href="{{ route('admin.mitarbeiter.index') }}" class="btn btn-outline-secondary">Abbrechen</a>
-                            <button type="submit" class="btn btn-primary">Aenderungen speichern</button>
+                            <button type="submit" class="btn btn-primary">Änderungen speichern</button>
                         </div>
 
                     </form>

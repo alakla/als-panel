@@ -96,7 +96,7 @@
                                 @elseif($rechnung->status === 'storniert')
                                     <span class="badge badge-status bg-danger fs-6">Storniert</span>
                                 @else
-                                    <span class="badge badge-status bg-warning text-dark fs-6">Offen</span>
+                                    <span class="badge badge-status badge-orange fs-6">Offen</span>
                                 @endif
                             </td>
                         </tr>

@@ -64,7 +64,7 @@
 
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                             <a href="{{ route('admin.auftraggeber.index') }}" class="btn btn-outline-secondary">Abbrechen</a>
-                            <button type="submit" class="btn btn-primary">Aenderungen speichern</button>
+                            <button type="submit" class="btn btn-primary">Änderungen speichern</button>
                         </div>
                     </form>
                 </div>

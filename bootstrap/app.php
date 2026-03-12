@@ -5,7 +5,7 @@
  *
  * Diese Datei konfiguriert die Laravel-Anwendung:
  * - Routing: Welche Routen-Dateien geladen werden
- * - Middleware: Alias-Definitionen fuer eigene Middlewares
+ * - Middleware: Alias-Definitionen für eigene Middlewares
  * - Exceptions: Globale Fehlerbehandlung
  */
 
@@ -22,7 +22,7 @@ return Application::configure(basePath: dirname(__DIR__))
     | Legt fest, welche Routen-Dateien die Anwendung verwendet:
     | - web.php: Alle Web-Routen mit Session und CSRF-Schutz
     | - console.php: Artisan-Konsolenbefehle
-    | - /up: Health-Check-Endpunkt fuer Server-Monitoring
+    | - /up: Health-Check-Endpunkt für Server-Monitoring
     */
     ->withRouting(
         web:      __DIR__.'/../routes/web.php',
@@ -36,8 +36,8 @@ return Application::configure(basePath: dirname(__DIR__))
     |--------------------------------------------------------------------------
     | Registriert eigene Middleware-Aliase, die in den Routen verwendet werden:
     |
-    | 'admin'       -> CheckAdmin: Prueft ob der Benutzer die Rolle 'admin' hat
-    | 'mitarbeiter' -> CheckMitarbeiter: Prueft ob der Benutzer Mitarbeiter ist
+    | 'admin'       -> CheckAdmin: Prüft ob der Benutzer die Rolle 'admin' hat
+    | 'mitarbeiter' -> CheckMitarbeiter: Prüft ob der Benutzer Mitarbeiter ist
     |
     | Verwendung in Routen: ->middleware(['auth', 'admin'])
     */
@@ -52,9 +52,9 @@ return Application::configure(basePath: dirname(__DIR__))
     |--------------------------------------------------------------------------
     | Globale Fehlerbehandlung
     |--------------------------------------------------------------------------
-    | Hier koennen eigene Exception-Handler fuer spezifische Fehlertypen
+    | Hier können eigene Exception-Handler für spezifische Fehlertypen
     | registriert werden, z.B. 404 oder 403 Fehlerseiten.
     */
     ->withExceptions(function (Exceptions $exceptions): void {
-        // Zukuenftige Fehlerbehandlung hier einfuegen
+        // Zukünftige Fehlerbehandlung hier einfügen
     })->create();

@@ -19,7 +19,7 @@ use Illuminate\Validation\Rule;
 class MitarbeiterRequest extends FormRequest
 {
     /**
-     * Nur Administratoren duerfen Mitarbeiterdaten einreichen.
+     * Nur Administratoren dürfen Mitarbeiterdaten einreichen.
      *
      * @return bool
      */
@@ -29,7 +29,7 @@ class MitarbeiterRequest extends FormRequest
     }
 
     /**
-     * Validierungsregeln fuer Mitarbeiterdaten.
+     * Validierungsregeln für Mitarbeiterdaten.
      *
      * Beim Erstellen (POST): E-Mail muss eindeutig in der users-Tabelle sein.
      * Beim Bearbeiten (PUT/PATCH): E-Mail darf die eigene sein (unique ignoriert aktuellen User).
@@ -45,18 +45,21 @@ class MitarbeiterRequest extends FormRequest
             // Name: Pflichtfeld, max. 255 Zeichen
             'name'             => ['required', 'string', 'max:255'],
 
-            // E-Mail: Pflichtfeld, gueltiges Format, eindeutig (ausser beim eigenen Datensatz)
+            // E-Mail: Pflichtfeld, gültiges Format, eindeutig (ausser beim eigenen Datensatz)
             'email'            => ['required', 'email', 'max:255', Rule::unique('users', 'email')->ignore($userId)],
 
             // Passwort: Nur beim Erstellen Pflichtfeld, min. 8 Zeichen
             'password'         => [$this->isMethod('POST') ? 'required' : 'nullable', 'string', 'min:8'],
 
-            // Personalnummer: Pflichtfeld, eindeutig in der mitarbeiter-Tabelle
+            // Personalnummer: Pflichtfeld, eindeutig in der mitarbeiter-Tabelle (kein Duplikat möglich)
             'personalnummer'   => ['required', 'string', 'max:50',
                 Rule::unique('mitarbeiter', 'personalnummer')->ignore($this->route('mitarbeiter'))
             ],
 
-            // Einstellungsdatum: Pflichtfeld, gueltiges Datum
+            // Telefonnummer: optional
+            'telefon'          => ['nullable', 'string', 'max:50'],
+
+            // Einstellungsdatum: Pflichtfeld, gültiges Datum
             'einstellungsdatum' => ['required', 'date'],
 
             // Stundenlohn: Pflichtfeld, numerisch, mindestens 0
@@ -74,14 +77,14 @@ class MitarbeiterRequest extends FormRequest
         return [
             'name.required'              => 'Der Name ist ein Pflichtfeld.',
             'email.required'             => 'Die E-Mail-Adresse ist ein Pflichtfeld.',
-            'email.email'                => 'Bitte eine gueltige E-Mail-Adresse eingeben.',
+            'email.email'                => 'Bitte eine gültige E-Mail-Adresse eingeben.',
             'email.unique'               => 'Diese E-Mail-Adresse ist bereits vergeben.',
             'password.required'          => 'Das Passwort ist ein Pflichtfeld.',
             'password.min'               => 'Das Passwort muss mindestens 8 Zeichen lang sein.',
             'personalnummer.required'    => 'Die Personalnummer ist ein Pflichtfeld.',
             'personalnummer.unique'      => 'Diese Personalnummer ist bereits vergeben.',
             'einstellungsdatum.required' => 'Das Einstellungsdatum ist ein Pflichtfeld.',
-            'einstellungsdatum.date'     => 'Bitte ein gueltiges Datum eingeben.',
+            'einstellungsdatum.date'     => 'Bitte ein gültiges Datum eingeben.',
             'stundenlohn.required'       => 'Der Stundenlohn ist ein Pflichtfeld.',
             'stundenlohn.numeric'        => 'Der Stundenlohn muss eine Zahl sein.',
             'stundenlohn.min'            => 'Der Stundenlohn darf nicht negativ sein.',

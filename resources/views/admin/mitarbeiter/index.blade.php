@@ -1,4 +1,4 @@
-{{-- Mitarbeiterliste – Uebersicht aller Mitarbeitenden --}}
+{{-- Mitarbeiterliste – Übersicht aller Mitarbeitenden --}}
 {{-- Zugriff: Nur Administratoren --}}
 <x-app-layout>
 
@@ -42,7 +42,7 @@
                 </div>
                 <div class="col-auto">
                     @if($suche)
-                        <a href="{{ route('admin.mitarbeiter.index') }}" class="btn btn-outline-secondary">Zuruecksetzen</a>
+                        <a href="{{ route('admin.mitarbeiter.index') }}" class="btn btn-outline-secondary">Zurücksetzen</a>
                     @endif
                 </div>
             </form>
@@ -61,12 +61,13 @@
                         <th>Einstellung</th>
                         <th>Stundenlohn</th>
                         <th>Status</th>
-                        <th class="text-end">Aktionen</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse ($mitarbeiter as $ma)
-                        <tr>
+                        {{-- Klick auf Zeile navigiert zur Detailseite --}}
+                        <tr style="cursor:pointer"
+                            onclick="window.location='{{ route('admin.mitarbeiter.show', $ma) }}'">
                             <td class="text-muted small">{{ $ma->personalnummer }}</td>
                             <td class="fw-semibold">{{ $ma->user->name }}</td>
                             <td>{{ $ma->user->email }}</td>
@@ -80,32 +81,11 @@
                                     <span class="badge badge-status bg-secondary">Inaktiv</span>
                                 @endif
                             </td>
-                            <td class="text-end">
-                                {{-- Detailansicht --}}
-                                <a href="{{ route('admin.mitarbeiter.show', $ma) }}"
-                                    class="btn btn-sm btn-outline-info">Details</a>
-
-                                {{-- Bearbeiten --}}
-                                <a href="{{ route('admin.mitarbeiter.edit', $ma) }}"
-                                    class="btn btn-sm btn-outline-primary">Bearbeiten</a>
-
-                                {{-- Deaktivieren / Reaktivieren --}}
-                                <form method="POST" action="{{ route('admin.mitarbeiter.toggle', $ma) }}"
-                                    class="d-inline"
-                                    data-confirm="Status wirklich aendern?" data-confirm-btn="danger">
-                                    @csrf
-                                    @method('PATCH')
-                                    <button type="submit"
-                                        class="btn btn-sm {{ $ma->status === 'aktiv' ? 'btn-outline-danger' : 'btn-outline-success' }}">
-                                        {{ $ma->status === 'aktiv' ? 'Deaktivieren' : 'Reaktivieren' }}
-                                    </button>
-                                </form>
-                            </td>
                         </tr>
                     @empty
                         {{-- Keine Mitarbeitenden gefunden --}}
                         <tr>
-                            <td colspan="7" class="text-center text-muted py-4">
+                            <td colspan="6" class="text-center text-muted py-4">
                                 Keine Mitarbeitenden gefunden.
                             </td>
                         </tr>

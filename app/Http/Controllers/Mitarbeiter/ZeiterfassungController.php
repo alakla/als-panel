@@ -13,21 +13,21 @@ use Illuminate\View\View;
 /**
  * ZeiterfassungController (Mitarbeiter-Bereich)
  *
- * Ermoeglicht Mitarbeitenden das Erfassen, Bearbeiten und Loeschen
- * ihrer eigenen taeglichen Arbeitszeiteintraege.
+ * Ermöglicht Mitarbeitenden das Erfassen, Bearbeiten und Löschen
+ * ihrer eigenen täglichen Arbeitszeiteinträge.
  *
- * Wichtig: Nur eigene Eintraege sind sichtbar und bearbeitbar.
- * Nur Eintraege mit Status 'offen' koennen bearbeitet oder geloescht werden,
- * da freigegebene/abgelehnte Eintraege bereits im Workflow sind.
+ * Wichtig: Nur eigene Einträge sind sichtbar und bearbeitbar.
+ * Nur Einträge mit Status 'offen' können bearbeitet oder gelöscht werden,
+ * da freigegebene/abgelehnte Einträge bereits im Workflow sind.
  *
  * Zugriff: Nur Mitarbeitende (Middleware: auth + mitarbeiter)
  */
 class ZeiterfassungController extends Controller
 {
     /**
-     * Zeigt alle Zeiteintraege des angemeldeten Mitarbeitenden.
+     * Zeigt alle Zeiteinträge des angemeldeten Mitarbeitenden.
      *
-     * Unterstuetzt optionale Filterung nach Monat und Auftraggeber.
+     * Unterstützt optionale Filterung nach Monat und Auftraggeber.
      *
      * @return \Illuminate\View\View
      */
@@ -40,15 +40,15 @@ class ZeiterfassungController extends Controller
         $monat       = request('monat', now()->format('Y-m'));
         $auftraggeberId = request('auftraggeber_id');
 
-        // Zeiteintraege des Mitarbeitenden laden, gefiltert und paginiert
+        // Zeiteinträge des Mitarbeitenden laden, gefiltert und paginiert
         $zeiterfassungen = Zeiterfassung::where('mitarbeiter_id', $mitarbeiter->id)
             ->when($monat, function ($query) use ($monat) {
-                // Nur Eintraege des gewaehlten Monats anzeigen
+                // Nur Einträge des gewählten Monats anzeigen
                 $query->whereYear('datum', substr($monat, 0, 4))
                       ->whereMonth('datum', substr($monat, 5, 2));
             })
             ->when($auftraggeberId, function ($query) use ($auftraggeberId) {
-                // Nur Eintraege fuer den gewaehlten Auftraggeber anzeigen
+                // Nur Einträge für den gewählten Auftraggeber anzeigen
                 $query->where('auftraggeber_id', $auftraggeberId);
             })
             ->with('auftraggeber')
@@ -66,7 +66,7 @@ class ZeiterfassungController extends Controller
             })
             ->sum('stunden');
 
-        // Alle aktiven Auftraggeber fuer das Filter-Dropdown laden
+        // Alle aktiven Auftraggeber für das Filter-Dropdown laden
         $auftraggeber = Auftraggeber::where('is_active', true)->orderBy('firmenname')->get();
 
         return view('mitarbeiter.zeiterfassung.index', compact(
@@ -81,10 +81,10 @@ class ZeiterfassungController extends Controller
      */
     public function create(): View
     {
-        // Nur aktive Auftraggeber anzeigen (inaktive koennen keine Stunden buchen)
+        // Nur aktive Auftraggeber anzeigen (inaktive können keine Stunden buchen)
         $auftraggeber = Auftraggeber::where('is_active', true)->orderBy('firmenname')->get();
 
-        // Vordefinierte Taetigkeiten aus der Datenbank laden (vom Admin verwaltbar)
+        // Vordefinierte Tätigkeiten aus der Datenbank laden (vom Admin verwaltbar)
         $taetigkeiten = Taetigkeit::orderBy('reihenfolge')->orderBy('name')->get();
 
         return view('mitarbeiter.zeiterfassung.create', compact('auftraggeber', 'taetigkeiten'));
@@ -94,7 +94,7 @@ class ZeiterfassungController extends Controller
      * Speichert einen neuen Zeiteintrag in der Datenbank.
      *
      * Der Eintrag wird automatisch dem angemeldeten Mitarbeitenden zugeordnet
-     * und erhaelt den Status 'offen' (noch nicht freigegeben).
+     * und erhält den Status 'offen' (noch nicht freigegeben).
      *
      * @param  \App\Http\Requests\ZeiterfassungRequest  $request
      * @return \Illuminate\Http\RedirectResponse
@@ -111,7 +111,7 @@ class ZeiterfassungController extends Controller
             'datum'           => $request->datum,
             'stunden'         => $request->stunden,
             'beschreibung'    => $request->beschreibung,
-            'status'          => 'offen', // Neu erstellte Eintraege sind immer 'offen'
+            'status'          => 'offen', // Neu erstellte Einträge sind immer 'offen'
         ]);
 
         return redirect()
@@ -122,26 +122,26 @@ class ZeiterfassungController extends Controller
     /**
      * Zeigt das Bearbeitungsformular eines vorhandenen Zeiteintrags.
      *
-     * Nur der Mitarbeitende, dem der Eintrag gehoert, darf ihn bearbeiten.
-     * Freigegebene oder abgelehnte Eintraege koennen nicht mehr bearbeitet werden.
+     * Nur der Mitarbeitende, dem der Eintrag gehört, darf ihn bearbeiten.
+     * Freigegebene oder abgelehnte Einträge können nicht mehr bearbeitet werden.
      *
      * @param  \App\Models\Zeiterfassung  $zeiterfassung
      * @return \Illuminate\View\View
      */
     public function edit(Zeiterfassung $zeiterfassung): View
     {
-        // Sicherheitspruefung: Gehoert dieser Eintrag dem angemeldeten Mitarbeitenden?
+        // Sicherheitsprüfung: Gehört dieser Eintrag dem angemeldeten Mitarbeitenden?
         $this->authorizeEntry($zeiterfassung);
 
-        // Nur offene Eintraege koennen bearbeitet werden
+        // Nur offene Einträge können bearbeitet werden
         if ($zeiterfassung->status !== 'offen') {
-            abort(403, 'Freigegebene oder abgelehnte Eintraege koennen nicht mehr bearbeitet werden.');
+            abort(403, 'Freigegebene oder abgelehnte Einträge können nicht mehr bearbeitet werden.');
         }
 
-        // Aktive Auftraggeber fuer das Dropdown laden
+        // Aktive Auftraggeber für das Dropdown laden
         $auftraggeber = Auftraggeber::where('is_active', true)->orderBy('firmenname')->get();
 
-        // Vordefinierte Taetigkeiten aus der Datenbank laden
+        // Vordefinierte Tätigkeiten aus der Datenbank laden
         $taetigkeiten = Taetigkeit::orderBy('reihenfolge')->orderBy('name')->get();
 
         return view('mitarbeiter.zeiterfassung.edit', compact('zeiterfassung', 'auftraggeber', 'taetigkeiten'));
@@ -156,7 +156,7 @@ class ZeiterfassungController extends Controller
      */
     public function update(ZeiterfassungRequest $request, Zeiterfassung $zeiterfassung): RedirectResponse
     {
-        // Sicherheitspruefung: Nur eigene offene Eintraege duerfen aktualisiert werden
+        // Sicherheitsprüfung: Nur eigene offene Einträge dürfen aktualisiert werden
         $this->authorizeEntry($zeiterfassung);
 
         if ($zeiterfassung->status !== 'offen') {
@@ -172,37 +172,37 @@ class ZeiterfassungController extends Controller
     }
 
     /**
-     * Loescht einen Zeiteintrag aus der Datenbank.
+     * Löscht einen Zeiteintrag aus der Datenbank.
      *
-     * Nur offene Eintraege koennen geloescht werden.
+     * Nur offene Einträge können gelöscht werden.
      *
      * @param  \App\Models\Zeiterfassung  $zeiterfassung
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Zeiterfassung $zeiterfassung): RedirectResponse
     {
-        // Sicherheitspruefung: Nur eigene offene Eintraege duerfen geloescht werden
+        // Sicherheitsprüfung: Nur eigene offene Einträge dürfen gelöscht werden
         $this->authorizeEntry($zeiterfassung);
 
         if ($zeiterfassung->status !== 'offen') {
-            abort(403, 'Freigegebene oder abgelehnte Eintraege koennen nicht geloescht werden.');
+            abort(403, 'Freigegebene oder abgelehnte Einträge können nicht gelöscht werden.');
         }
 
         $zeiterfassung->delete();
 
         return redirect()
             ->route('mitarbeiter.zeiterfassung.index')
-            ->with('success', 'Zeiteintrag wurde erfolgreich geloescht.');
+            ->with('success', 'Zeiteintrag wurde erfolgreich gelöscht.');
     }
 
     /**
-     * Hilfsmethode: Prueft, ob der angemeldete Mitarbeitende Eigentuemer des Eintrags ist.
+     * Hilfsmethode: Prüft, ob der angemeldete Mitarbeitende Eigentümer des Eintrags ist.
      *
      * Wird in edit(), update() und destroy() aufgerufen, um sicherzustellen,
-     * dass kein Mitarbeitender die Eintraege eines anderen einsehen oder veraendern kann.
-     * Bricht mit HTTP 403 (Forbidden) ab, falls der Eintrag nicht dem Eingeloggten gehoert.
+     * dass kein Mitarbeitender die Einträge eines anderen einsehen oder verändern kann.
+     * Bricht mit HTTP 403 (Forbidden) ab, falls der Eintrag nicht dem Eingeloggten gehört.
      *
-     * @param  \App\Models\Zeiterfassung  $zeiterfassung  Der zu pruefende Eintrag
+     * @param  \App\Models\Zeiterfassung  $zeiterfassung  Der zu prüfende Eintrag
      */
     private function authorizeEntry(Zeiterfassung $zeiterfassung): void
     {

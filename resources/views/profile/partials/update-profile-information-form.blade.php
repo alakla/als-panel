@@ -1,11 +1,11 @@
 <section>
     <header>
         <h2 class="text-lg font-medium text-gray-900">
-            {{ __('Profile Information') }}
+            Profilinformationen
         </h2>
 
         <p class="mt-1 text-sm text-gray-600">
-            {{ __("Update your account's profile information and email address.") }}
+            Name und E-Mail-Adresse aktualisieren.
         </p>
     </header>
 
@@ -47,17 +47,21 @@
             @endif
         </div>
 
-        <div class="flex items-center gap-4">
-            <x-primary-button>{{ __('Save') }}</x-primary-button>
+        @if($user->mitarbeiter)
+        <div>
+            <x-input-label for="telefon" value="Telefonnummer" />
+            <x-text-input id="telefon" name="telefon" type="tel" class="mt-1 block w-full"
+                :value="old('telefon', $user->mitarbeiter->telefon)"
+                placeholder="z.B. 0176 12345678" autocomplete="tel" />
+            <x-input-error class="mt-2" :messages="$errors->get('telefon')" />
+        </div>
+        @endif
+
+        <div class="d-flex align-items-center gap-3 mt-2">
+            <button type="submit" class="btn btn-primary">Speichern</button>
 
             @if (session('status') === 'profile-updated')
-                <p
-                    x-data="{ show: true }"
-                    x-show="show"
-                    x-transition
-                    x-init="setTimeout(() => show = false, 2000)"
-                    class="text-sm text-gray-600"
-                >{{ __('Saved.') }}</p>
+                <span class="text-success small">Gespeichert.</span>
             @endif
         </div>
     </form>

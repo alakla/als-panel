@@ -8,11 +8,11 @@ use Illuminate\Support\ServiceProvider;
  * AppServiceProvider – Zentraler Anwendungs-Service-Provider
  *
  * Dieser Provider wird beim Start der Anwendung automatisch geladen.
- * Hier koennen anwendungsweite Dienste registriert und konfiguriert werden,
+ * Hier können anwendungsweite Dienste registriert und konfiguriert werden,
  * z.B. eigene Makros, View-Composer, Datenbankregeln oder globale Einstellungen.
  *
- * Fuer das ALS Panel wird dieser Provider bei Bedarf erweitert,
- * z.B. fuer benutzerdefinierte Validierungsregeln oder PDF-Konfiguration.
+ * Für das ALS Panel wird dieser Provider bei Bedarf erweitert,
+ * z.B. für benutzerdefinierte Validierungsregeln oder PDF-Konfiguration.
  */
 class AppServiceProvider extends ServiceProvider
 {
@@ -20,21 +20,21 @@ class AppServiceProvider extends ServiceProvider
      * Registriert anwendungsweite Dienste im Service-Container.
      *
      * Hier werden Bindungen, Singletons oder Factory-Callbacks
-     * fuer eigene Klassen und Interfaces registriert.
+     * für eigene Klassen und Interfaces registriert.
      */
     public function register(): void
     {
-        // Zukuenftige Service-Registrierungen hier einfuegen
+        // Zukünftige Service-Registrierungen hier einfügen
     }
 
     /**
-     * Wird nach der Registrierung aller Services ausgefuehrt.
+     * Wird nach der Registrierung aller Services ausgeführt.
      *
-     * Hier koennen View-Composer, Event-Listener, Routen-Makros
+     * Hier können View-Composer, Event-Listener, Routen-Makros
      * oder globale Middleware-Konfigurationen eingerichtet werden.
      */
     public function boot(): void
     {
-        // Zukuenftige Boot-Konfigurationen hier einfuegen
+        // Zukünftige Boot-Konfigurationen hier einfügen
     }
 }

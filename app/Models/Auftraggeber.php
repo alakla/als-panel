@@ -7,17 +7,17 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Auftraggeber-Model
  *
- * Repraesentiert ein Kundenunternehmen, an das Mitarbeitende vermittelt werden.
- * Der Stundensatz wird pro Taetigkeit festgelegt (nicht mehr beim Auftraggeber).
+ * Repräsentiert ein Kundenunternehmen, an das Mitarbeitende vermittelt werden.
+ * Der Stundensatz wird pro Tätigkeit festgelegt (nicht mehr beim Auftraggeber).
  *
- * Datenbankname wird explizit angegeben, da Laravel sonst 'auftraggebers' verwenden wuerde.
+ * Datenbankname wird explizit angegeben, da Laravel sonst 'auftraggebers' verwenden würde.
  */
 class Auftraggeber extends Model
 {
     // Expliziter Tabellenname
     protected $table = 'auftraggeber';
 
-    // Felder, die per Massenverarbeitung befuellt werden duerfen
+    // Felder, die per Massenverarbeitung befüllt werden dürfen
     protected $fillable = [
         'firmenname',
         'ansprechpartner',
@@ -29,7 +29,7 @@ class Auftraggeber extends Model
 
     /**
      * Beziehung zu den Zeiterfassungen (1:n)
-     * Ein Auftraggeber kann viele Zeiteintraege von verschiedenen Mitarbeitenden haben.
+     * Ein Auftraggeber kann viele Zeiteinträge von verschiedenen Mitarbeitenden haben.
      */
     public function zeiterfassungen()
     {

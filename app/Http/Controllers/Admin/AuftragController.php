@@ -3,14 +3,14 @@
 /**
  * Controller: Admin\AuftragController
  *
- * Verwaltet die Zuweisung von Arbeitsauftraegen durch den Administrator.
+ * Verwaltet die Zuweisung von Arbeitsaufträgen durch den Administrator.
  *
  * Ablauf:
- *   1. Admin waehlt Datum (muss heute oder in der Zukunft liegen)
- *   2. Seite laedt neu und zeigt verfuegbare Mitarbeitende fuer dieses Datum
- *   3. Admin waehlt Mitarbeitenden, Auftraggeber, Zeiten, Pause und Taetigkeit
+ *   1. Admin wählt Datum (muss heute oder in der Zukunft liegen)
+ *   2. Seite lädt neu und zeigt verfügbare Mitarbeitende für dieses Datum
+ *   3. Admin wählt Mitarbeitenden, Auftraggeber, Zeiten, Pause und Tätigkeit
  *   4. Nach dem Speichern erscheint der Auftrag mit Status "gesendet"
- *   5. Wenn Mitarbeitender bestaetigt -> Status "bestaetigt" + Zeiteintrag erstellt
+ *   5. Wenn Mitarbeitender bestätigt -> Status "bestätigt" + Zeiteintrag erstellt
  *
  * Zugriff: Nur Admin (Middleware: admin)
  */
@@ -28,7 +28,7 @@ use Illuminate\Http\Request;
 class AuftragController extends Controller
 {
     /**
-     * Zeigt alle Auftraege mit Filtermoeglickeiten.
+     * Zeigt alle Aufträge mit Filtermöglichkeiten.
      *
      * Filter: Status, Mitarbeitender, Auftraggeber, Monat/Jahr
      * Freigeben/Ablehnen-Aktionen sind ebenfalls hier integriert.
@@ -42,7 +42,7 @@ class AuftragController extends Controller
             ->orderByDesc('datum')
             ->orderByDesc('von');
 
-        // Statusfilter: gesendet | bestaetigt | freigegeben | abgelehnt | alle
+        // Statusfilter: gesendet | bestätigt | freigegeben | abgelehnt | alle
         $status = $request->get('status', 'alle');
         if ($status !== 'alle') {
             $query->where('status', $status);
@@ -66,7 +66,7 @@ class AuftragController extends Controller
         $monat = sprintf('%04d-%02d', $filterJahr, $filterMonat);
         $query->whereYear('datum', $filterJahr)->whereMonth('datum', $filterMonat);
 
-        // Dynamische Jahresspanne: vom aeltesten Auftrag bis naechstes Jahr
+        // Dynamische Jahresspanne: vom ältesten Auftrag bis nächstes Jahr
         $aeltestesJahr = Auftrag::selectRaw('YEAR(MIN(datum)) as jahr')->value('jahr') ?? now()->year;
         $jahre = range(now()->year + 1, $aeltestesJahr);
 
@@ -74,25 +74,36 @@ class AuftragController extends Controller
         $mitarbeiter  = Mitarbeiter::with('user')->where('status', 'aktiv')->get();
         $auftraggeber = Auftraggeber::where('is_active', true)->orderBy('firmenname')->get();
 
+        // Anzahl pro Status für den aktuellen Monat (unabhängig vom Statusfilter)
+        $statusCounts = Auftrag::query()
+            ->when($mitarbeiterId, fn($q) => $q->where('mitarbeiter_id', $mitarbeiterId))
+            ->when($auftraggeberId, fn($q) => $q->where('auftraggeber_id', $auftraggeberId))
+            ->whereYear('datum', $filterJahr)
+            ->whereMonth('datum', $filterMonat)
+            ->selectRaw('status, COUNT(*) as anzahl')
+            ->groupBy('status')
+            ->pluck('anzahl', 'status');
+
         return view('admin.auftraege.index', compact(
             'auftraege', 'mitarbeiter', 'auftraggeber', 'status', 'monat',
-            'mitarbeiterId', 'auftraggeberId', 'jahre'
+            'mitarbeiterId', 'auftraggeberId', 'jahre', 'statusCounts'
         ));
     }
 
     /**
-     * Gibt einen bestaetgten Auftrag frei.
+     * Gibt einen bestätigten Auftrag frei.
      *
-     * Aendert den Auftrag-Status auf "freigegeben" und aktualisiert
-     * die zugehoerige Zeiterfassung ebenfalls auf "freigegeben".
+     * Ändert den Auftrag-Status auf "freigegeben" und aktualisiert
+     * die zugehörige Zeiterfassung ebenfalls auf "freigegeben".
      *
      * @param Auftrag $auftrag Der freizugebende Auftrag
      * @return \Illuminate\Http\RedirectResponse
      */
     public function freigeben(Auftrag $auftrag)
     {
-        // Auftrag-Status aktualisieren
-        $auftrag->update(['status' => 'freigegeben']);
+        // Auftrag-Status aktualisieren; Zeitänderungs-Flag zurücksetzen (wurde vom Admin geprüft)
+        // zeit_geaendert zurücksetzen (Admin hat geprüft); zeit_aenderung_info bleibt als stiller Hinweis erhalten
+        $auftrag->update(['status' => 'freigegeben', 'zeit_geaendert' => false]);
 
         // Passende Zeiterfassung (gleicher Mitarbeitender + Datum) ebenfalls freigeben
         Zeiterfassung::where('mitarbeiter_id', $auftrag->mitarbeiter_id)
@@ -104,18 +115,18 @@ class AuftragController extends Controller
     }
 
     /**
-     * Lehnt einen bestaetgten Auftrag ab.
+     * Lehnt einen bestätigten Auftrag ab.
      *
-     * Aendert den Auftrag-Status auf "abgelehnt" und aktualisiert
-     * die zugehoerige Zeiterfassung ebenfalls auf "abgelehnt".
+     * Ändert den Auftrag-Status auf "abgelehnt" und aktualisiert
+     * die zugehörige Zeiterfassung ebenfalls auf "abgelehnt".
      *
      * @param Auftrag $auftrag Der abzulehnende Auftrag
      * @return \Illuminate\Http\RedirectResponse
      */
     public function ablehnen(Auftrag $auftrag)
     {
-        // Auftrag-Status aktualisieren
-        $auftrag->update(['status' => 'abgelehnt']);
+        // Auftrag-Status aktualisieren; zeit_geaendert zurücksetzen (Admin hat geprüft)
+        $auftrag->update(['status' => 'abgelehnt', 'zeit_geaendert' => false]);
 
         // Passende Zeiterfassung (gleicher Mitarbeitender + Datum) ebenfalls ablehnen
         Zeiterfassung::where('mitarbeiter_id', $auftrag->mitarbeiter_id)
@@ -127,10 +138,10 @@ class AuftragController extends Controller
     }
 
     /**
-     * Gibt mehrere bestaetgte Auftraege auf einmal frei (Massenfreigabe).
+     * Gibt mehrere bestätigte Aufträge auf einmal frei (Massenfreigabe).
      *
      * Erwartet ein Array von Auftrag-IDs im Request-Feld "eintraege[]".
-     * Nur Auftraege mit Status "bestaetigt" werden verarbeitet.
+     * Nur Aufträge mit Status "bestätigt" werden verarbeitet.
      *
      * @param Request $request HTTP-Anfrage mit eintraege[]-Array
      * @return \Illuminate\Http\RedirectResponse
@@ -140,17 +151,17 @@ class AuftragController extends Controller
         $ids = $request->input('eintraege', []);
 
         if (empty($ids)) {
-            return back()->with('error', 'Keine Auftraege ausgewaehlt.');
+            return back()->with('error', 'Keine Aufträge ausgewählt.');
         }
 
-        // Nur bestaetgte Auftraege laden (Sicherheitspruefung)
+        // Nur bestätigte Aufträge laden (Sicherheitsprüfung)
         $auftraege = Auftrag::whereIn('id', $ids)
             ->where('status', 'bestaetigt')
             ->get();
 
         foreach ($auftraege as $auftrag) {
-            // Auftrag freigeben
-            $auftrag->update(['status' => 'freigegeben']);
+            // Auftrag freigeben; zeit_geaendert zurücksetzen
+            $auftrag->update(['status' => 'freigegeben', 'zeit_geaendert' => false]);
 
             // Passende Zeiterfassung ebenfalls freigeben
             Zeiterfassung::where('mitarbeiter_id', $auftrag->mitarbeiter_id)
@@ -159,13 +170,13 @@ class AuftragController extends Controller
                 ->update(['status' => 'freigegeben']);
         }
 
-        return back()->with('success', $auftraege->count() . ' Auftrag/Auftraege freigegeben.');
+        return back()->with('success', $auftraege->count() . ' Auftrag/Aufträge freigegeben.');
     }
 
     /**
      * Zeigt das Formular zum Erstellen eines neuen Auftrags.
      *
-     * Wenn ein Datum per GET-Parameter uebergeben wird, werden nur die
+     * Wenn ein Datum per GET-Parameter übergeben wird, werden nur die
      * Mitarbeitenden angezeigt, die an diesem Tag noch keinen offenen
      * (gesendeten) Auftrag haben.
      *
@@ -177,12 +188,12 @@ class AuftragController extends Controller
         // Datum aus GET-Parameter oder heutiges Datum als Standardwert
         $datum = $request->get('datum', now()->format('Y-m-d'));
 
-        // Sicherheitspruefung: Datum darf nicht in der Vergangenheit liegen
+        // Sicherheitsprüfung: Datum darf nicht in der Vergangenheit liegen
         if ($datum < now()->format('Y-m-d')) {
             $datum = now()->format('Y-m-d');
         }
 
-        // Taetigkeiten und Auftraggeber laden
+        // Tätigkeiten und Auftraggeber laden
         $taetigkeiten = Taetigkeit::orderBy('reihenfolge')->orderBy('name')->get();
         $auftraggeber = Auftraggeber::where('is_active', true)->orderBy('firmenname')->get();
 
@@ -191,7 +202,7 @@ class AuftragController extends Controller
             ->where('status', 'gesendet')
             ->pluck('mitarbeiter_id');
 
-        // Verfuegbare Mitarbeitende: aktiv und an diesem Tag noch nicht belegt
+        // Verfügbare Mitarbeitende: aktiv und an diesem Tag noch nicht belegt
         $mitarbeiter = Mitarbeiter::with('user')
             ->where('status', 'aktiv')
             ->whereNotIn('id', $belegteIds)
@@ -199,8 +210,20 @@ class AuftragController extends Controller
 
         $today = now()->format('Y-m-d');
 
+        // Vorausgefüllte Werte aus GET-Parametern (Schnellwiederholung eines bestehenden Auftrags)
+        $prefill = [
+            'mitarbeiter_id'  => $request->get('mitarbeiter_id', ''),
+            'auftraggeber_id' => $request->get('auftraggeber_id', ''),
+            'von_h'           => $request->get('von_h', '08'),
+            'von_m'           => $request->get('von_m', '00'),
+            'bis_h'           => $request->get('bis_h', '16'),
+            'bis_m'           => $request->get('bis_m', '00'),
+            'pause'           => $request->get('pause', '1'),
+            'taetigkeit_id'   => $request->get('taetigkeit_id', ''),
+        ];
+
         return view('admin.auftraege.create', compact(
-            'datum', 'taetigkeiten', 'auftraggeber', 'mitarbeiter', 'today'
+            'datum', 'taetigkeiten', 'auftraggeber', 'mitarbeiter', 'today', 'prefill'
         ));
     }
 
@@ -208,11 +231,11 @@ class AuftragController extends Controller
      * Speichert einen neuen Auftrag in der Datenbank.
      *
      * Validierungsregeln:
-     * - Datum: Pflicht, gueltiges Datum, nicht in der Vergangenheit
+     * - Datum: Pflicht, gültiges Datum, nicht in der Vergangenheit
      * - Mitarbeitender: Pflicht, muss existieren
      * - Auftraggeber: Pflicht, muss existieren
-     * - Taetigkeit: Pflicht, muss existieren
-     * - Von/Bis: Pflicht, gueltiges Zeitformat, Bis muss nach Von liegen
+     * - Tätigkeit: Pflicht, muss existieren
+     * - Von/Bis: Pflicht, gültiges Zeitformat, Bis muss nach Von liegen
      * - Pause: Optional, Boolean
      *
      * @param Request $request HTTP-Anfrage mit Formulardaten
@@ -224,7 +247,7 @@ class AuftragController extends Controller
         $von = $request->input('von_h', '00') . ':' . $request->input('von_m', '00');
         $bis = $request->input('bis_h', '00') . ':' . $request->input('bis_m', '00');
 
-        // Temporaer in den Request einfuegen fuer Validierung
+        // Temporär in den Request einfügen für Validierung
         $request->merge(['von' => $von, 'bis' => $bis]);
 
         $validated = $request->validate([
@@ -238,12 +261,12 @@ class AuftragController extends Controller
         ], [
             'datum.after_or_equal'  => 'Das Datum darf nicht in der Vergangenheit liegen.',
             'bis.after'             => 'Die Endzeit muss nach der Startzeit liegen.',
-            'mitarbeiter_id.exists' => 'Der ausgewaehlte Mitarbeitende existiert nicht.',
-            'auftraggeber_id.exists'=> 'Der ausgewaehlte Auftraggeber existiert nicht.',
-            'taetigkeit_id.exists'  => 'Die ausgewaehlte Taetigkeit existiert nicht.',
+            'mitarbeiter_id.exists' => 'Der ausgewählte Mitarbeitende existiert nicht.',
+            'auftraggeber_id.exists'=> 'Der ausgewählte Auftraggeber existiert nicht.',
+            'taetigkeit_id.exists'  => 'Die ausgewählte Tätigkeit existiert nicht.',
         ]);
 
-        // Pause: Checkbox liefert keinen Wert wenn nicht angehaekt
+        // Pause: Checkbox liefert keinen Wert wenn nicht angehakt
         $validated['pause']  = $request->boolean('pause');
         $validated['status'] = 'gesendet';
 
@@ -254,18 +277,18 @@ class AuftragController extends Controller
     }
 
     /**
-     * Storniert einen noch nicht bestaetigen Auftrag (loescht ihn).
+     * Storniert einen noch nicht bestätigten Auftrag (löscht ihn).
      *
-     * Nur Auftraege mit Status "gesendet" koennen storniert werden.
+     * Nur Aufträge mit Status "gesendet" können storniert werden.
      *
      * @param Auftrag $auftrag Der zu stornierende Auftrag
      * @return \Illuminate\Http\RedirectResponse
      */
     public function destroy(Auftrag $auftrag)
     {
-        // Bereits bestaetgte Auftraege koennen nicht mehr storniert werden
+        // Bereits bestätigte Aufträge können nicht mehr storniert werden
         if ($auftrag->status !== 'gesendet') {
-            return back()->with('error', 'Bereits bestaetgte Auftraege koennen nicht storniert werden.');
+            return back()->with('error', 'Bereits bestätigte Aufträge können nicht storniert werden.');
         }
 
         $auftrag->delete();

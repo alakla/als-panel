@@ -7,10 +7,10 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Rechnung-Model
  *
- * Repraesentiert eine erstellte Rechnung fuer einen Auftraggeber.
+ * Repräsentiert eine erstellte Rechnung für einen Auftraggeber.
  *
  * Rechnungserstellungsprozess:
- *  1. Admin waehlt Auftraggeber und Abrechnungszeitraum
+ *  1. Admin wählt Auftraggeber und Abrechnungszeitraum
  *  2. Alle freigegebenen Zeiteintraege des Zeitraums werden summiert
  *  3. Betraege werden automatisch berechnet:
  *     - Nettobetrag  = Gesamtstunden * Stundensatz des Auftraggebers
@@ -21,19 +21,19 @@ use Illuminate\Database\Eloquent\Model;
  * Status-Werte:
  *  - 'offen'     = Rechnung erstellt, aber noch nicht bezahlt (Standardwert)
  *  - 'bezahlt'   = Zahlung eingegangen, vom Admin bestaetigt
- *  - 'storniert' = Rechnung wurde storniert (fuer kuenftige Erweiterung)
+ *  - 'storniert' = Rechnung wurde storniert (für künftige Erweiterung)
  *
  * Rechnungsnummer-Format: RE-JJJJ-NNNN (z.B. RE-2026-0001)
  *
  * Datenbankname wird explizit angegeben, da Laravel sonst 'rechnungs'
- * als Pluralform verwenden wuerde (fehlerhafte englische Ableitung).
+ * als Pluralform verwenden würde (fehlerhafte englische Ableitung).
  */
 class Rechnung extends Model
 {
     // Expliziter Tabellenname (deutsche Schreibweise beibehalten)
     protected $table = 'rechnungen';
 
-    // Felder, die per Massenverarbeitung (create/update) befuellt werden duerfen
+    // Felder, die per Massenverarbeitung (create/update) befüllt werden dürfen
     protected $fillable = [
         'rechnungsnummer',   // Eindeutige Nummer im Format RE-JJJJ-NNNN
         'auftraggeber_id',   // Fremdschluessel zur auftraggeber-Tabelle
@@ -58,8 +58,8 @@ class Rechnung extends Model
     /**
      * Beziehung zum Auftraggeber (n:1)
      *
-     * Jede Rechnung gehoert zu genau einem Auftraggeber.
-     * Der Auftraggeber bestimmt den Stundensatz fuer die Berechnung.
+     * Jede Rechnung gehört zu genau einem Auftraggeber.
+     * Der Auftraggeber bestimmt den Stundensatz für die Berechnung.
      * Zugriff: $rechnung->auftraggeber->firmenname
      */
     public function auftraggeber()

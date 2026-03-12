@@ -9,7 +9,7 @@
         </div>
         <div class="col-auto">
             <a href="{{ route('admin.auftraege.index') }}" class="btn btn-outline-secondary btn-sm">
-                &larr; Zurueck
+                &larr; Zurück
             </a>
         </div>
     </div>
@@ -30,9 +30,10 @@
                         </div>
                     @endif
 
-                    {{-- Datum waehlen (GET-Formular, laedt Seite neu -> aktualisiert Mitarbeiterliste) --}}
+                    {{-- Datum wählen (GET-Formular, lädt Seite neu -> aktualisiert Mitarbeiterliste) --}}
+                    {{-- Prefill-Parameter werden als Hidden-Felder mitgesendet, damit sie beim Datumswechsel erhalten bleiben --}}
                     <div class="mb-3">
-                        <label class="form-label">Einsatzdatum <span class="text-danger">*</span></label>
+                        <label class="form-label fw-semibold">Einsatzdatum <span class="text-danger">*</span></label>
                         <form method="GET" action="{{ route('admin.auftraege.create') }}" class="d-flex gap-2">
                             <input type="date"
                                    name="datum"
@@ -40,46 +41,55 @@
                                    min="{{ $today }}"
                                    class="form-control"
                                    onchange="this.form.submit()">
+                            {{-- Vorausgefüllte Werte beibehalten --}}
+                            @if($prefill['mitarbeiter_id'])  <input type="hidden" name="mitarbeiter_id"  value="{{ $prefill['mitarbeiter_id'] }}">  @endif
+                            @if($prefill['auftraggeber_id']) <input type="hidden" name="auftraggeber_id" value="{{ $prefill['auftraggeber_id'] }}"> @endif
+                            <input type="hidden" name="von_h"         value="{{ $prefill['von_h'] }}">
+                            <input type="hidden" name="von_m"         value="{{ $prefill['von_m'] }}">
+                            <input type="hidden" name="bis_h"         value="{{ $prefill['bis_h'] }}">
+                            <input type="hidden" name="bis_m"         value="{{ $prefill['bis_m'] }}">
+                            <input type="hidden" name="pause"         value="{{ $prefill['pause'] }}">
+                            @if($prefill['taetigkeit_id'])  <input type="hidden" name="taetigkeit_id"   value="{{ $prefill['taetigkeit_id'] }}">  @endif
                         </form>
                     </div>
 
-                    {{-- POST-Formular fuer alle weiteren Felder --}}
+                    {{-- POST-Formular für alle weiteren Felder --}}
                     <form method="POST" action="{{ route('admin.auftraege.store') }}">
                         @csrf
                         <input type="hidden" name="datum" value="{{ $datum }}">
 
-                        {{-- Mitarbeitender: Nur verfuegbare werden angezeigt --}}
+                        {{-- Mitarbeitender: Nur verfügbare werden angezeigt --}}
                         <div class="mb-3">
-                            <label class="form-label">Mitarbeitender <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Mitarbeitender <span class="text-danger">*</span></label>
                             @if($mitarbeiter->isEmpty())
                                 <div class="alert alert-warning mb-0">
                                     Alle aktiven Mitarbeitenden haben an diesem Tag bereits einen Auftrag.
-                                    Bitte waehlen Sie ein anderes Datum.
+                                    Bitte wählen Sie ein anderes Datum.
                                 </div>
                             @else
                                 <select name="mitarbeiter_id" class="form-select" required>
-                                    <option value="">-- Mitarbeitenden waehlen --</option>
+                                    <option value="">-- Mitarbeitenden wählen --</option>
                                     @foreach($mitarbeiter as $ma)
                                         <option value="{{ $ma->id }}"
-                                            {{ old('mitarbeiter_id') == $ma->id ? 'selected' : '' }}>
+                                            {{ old('mitarbeiter_id', $prefill['mitarbeiter_id']) == $ma->id ? 'selected' : '' }}>
                                             {{ $ma->user->name }}
                                         </option>
                                     @endforeach
                                 </select>
                                 <div class="form-text text-muted">
-                                    Nur verfuegbare Mitarbeitende werden angezeigt (ohne Auftrag an diesem Tag).
+                                    Nur verfügbare Mitarbeitende werden angezeigt (ohne Auftrag an diesem Tag).
                                 </div>
                             @endif
                         </div>
 
                         {{-- Auftraggeber (Einsatzfirma) --}}
                         <div class="mb-3">
-                            <label class="form-label">Auftraggeber <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Auftraggeber <span class="text-danger">*</span></label>
                             <select name="auftraggeber_id" class="form-select" required>
-                                <option value="">-- Auftraggeber waehlen --</option>
+                                <option value="">-- Auftraggeber wählen --</option>
                                 @foreach($auftraggeber as $ag)
                                     <option value="{{ $ag->id }}"
-                                        {{ old('auftraggeber_id') == $ag->id ? 'selected' : '' }}>
+                                        {{ old('auftraggeber_id', $prefill['auftraggeber_id']) == $ag->id ? 'selected' : '' }}>
                                         {{ $ag->firmenname }}
                                     </option>
                                 @endforeach
@@ -88,11 +98,11 @@
 
                         {{-- Arbeitszeit: Von / Bis (Stunde + Minute getrennt) --}}
                         @php
-                            [$vonH, $vonM] = explode(':', old('von', '08:00'));
-                            [$bisH, $bisM] = explode(':', old('bis', '16:00'));
+                            [$vonH, $vonM] = explode(':', old('von', $prefill['von_h'].':'.$prefill['von_m']));
+                            [$bisH, $bisM] = explode(':', old('bis', $prefill['bis_h'].':'.$prefill['bis_m']));
                         @endphp
                         <div class="mb-3">
-                            <label class="form-label">Arbeitszeit <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Arbeitszeit <span class="text-danger">*</span></label>
                             <div class="d-flex align-items-center gap-2">
                                 {{-- Von --}}
                                 <span class="text-muted small">Von</span>
@@ -141,21 +151,21 @@
                                        id="pause"
                                        name="pause"
                                        value="1"
-                                       {{ old('pause', '1') ? 'checked' : '' }}>
+                                       {{ old('pause', $prefill['pause']) ? 'checked' : '' }}>
                                 <label class="form-check-label" for="pause">
                                     Pause (30 Minuten werden von der Arbeitszeit abgezogen)
                                 </label>
                             </div>
                         </div>
 
-                        {{-- Taetigkeit (Art der Arbeit) --}}
+                        {{-- Tätigkeit (Art der Arbeit) --}}
                         <div class="mb-4">
-                            <label class="form-label">Taetigkeit <span class="text-danger">*</span></label>
+                            <label class="form-label fw-semibold">Tätigkeit <span class="text-danger">*</span></label>
                             <select name="taetigkeit_id" class="form-select" required>
-                                <option value="">-- Taetigkeit waehlen --</option>
+                                <option value="">-- Tätigkeit wählen --</option>
                                 @foreach($taetigkeiten as $t)
                                     <option value="{{ $t->id }}"
-                                        {{ old('taetigkeit_id') == $t->id ? 'selected' : '' }}>
+                                        {{ old('taetigkeit_id', $prefill['taetigkeit_id']) == $t->id ? 'selected' : '' }}>
                                         {{ $t->name }}
                                     </option>
                                 @endforeach
@@ -179,17 +189,17 @@
             </div>
         </div>
 
-        {{-- Info-Karte: Erklaerung des Ablaufs --}}
+        {{-- Info-Karte: Erklärung des Ablaufs --}}
         <div class="col-md-4 col-lg-5">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white fw-semibold">Ablauf</div>
                 <div class="card-body">
                     <ol class="ps-3 small text-muted">
-                        <li class="mb-2">Admin waehlt Datum und erstellt Auftrag</li>
+                        <li class="mb-2">Admin wählt Datum und erstellt Auftrag</li>
                         <li class="mb-2">Mitarbeitender sieht den Auftrag mit Status <strong>Gesendet</strong></li>
-                        <li class="mb-2">Nach Ausfuehrung bestaetigt Mitarbeitender den Auftrag</li>
+                        <li class="mb-2">Nach Ausführung bestätigt Mitarbeitender den Auftrag</li>
                         <li class="mb-2">Zeiteintrag wird automatisch erstellt (Status: <strong>Offen</strong>)</li>
-                        <li>Admin genehmigt in der Zeitfreigabe</li>
+                        <li>Admin genehmigt in der Aufträge</li>
                     </ol>
                     <hr>
                     <p class="small text-muted mb-0"><strong>Pausenabzug:</strong> Bei aktivierter Pause werden 30 Minuten abgezogen.</p>

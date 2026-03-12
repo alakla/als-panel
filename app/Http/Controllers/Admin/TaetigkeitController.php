@@ -11,16 +11,16 @@ use Illuminate\View\View;
 /**
  * TaetigkeitController (Admin-Bereich)
  *
- * Ermoeglicht Administratoren das Verwalten der vordefinierten
- * Taetigkeitsbeschreibungen, die Mitarbeitende bei der Zeiterfassung
- * auswaehlen koennen (Hinzufuegen, Umbenennen, Loeschen, Sortieren).
+ * Ermöglicht Administratoren das Verwalten der vordefinierten
+ * Tätigkeitsbeschreibungen, die Mitarbeitende bei der Zeiterfassung
+ * auswählen können (Hinzufügen, Umbenennen, Löschen, Sortieren).
  *
  * Zugriff: Nur Administratoren (Middleware: auth + admin)
  */
 class TaetigkeitController extends Controller
 {
     /**
-     * Zeigt die Verwaltungsseite aller Taetigkeiten.
+     * Zeigt die Verwaltungsseite aller Tätigkeiten.
      */
     public function index(): View
     {
@@ -31,7 +31,7 @@ class TaetigkeitController extends Controller
     }
 
     /**
-     * Speichert eine neue Taetigkeit.
+     * Speichert eine neue Tätigkeit.
      * Die Reihenfolge wird automatisch ans Ende gesetzt.
      */
     public function store(Request $request): RedirectResponse
@@ -42,16 +42,16 @@ class TaetigkeitController extends Controller
             'abrechnungsart' => ['required', 'in:stundensatz,pauschal'],
         ], [
             'name.required'           => 'Die Bezeichnung ist erforderlich.',
-            'name.unique'             => 'Diese Taetigkeit existiert bereits.',
+            'name.unique'             => 'Diese Tätigkeit existiert bereits.',
             'name.max'                => 'Die Bezeichnung darf maximal 100 Zeichen lang sein.',
             'stundensatz.required'    => 'Der Betrag ist erforderlich.',
             'stundensatz.numeric'     => 'Der Betrag muss eine Zahl sein.',
             'stundensatz.min'         => 'Der Betrag darf nicht negativ sein.',
             'abrechnungsart.required' => 'Die Abrechnungsart ist erforderlich.',
-            'abrechnungsart.in'       => 'Ungueltiger Wert fuer Abrechnungsart.',
+            'abrechnungsart.in'       => 'Ungültiger Wert für Abrechnungsart.',
         ]);
 
-        // Naechste Reihenfolge-Position berechnen
+        // Nächste Reihenfolge-Position berechnen
         $naechstePosition = (Taetigkeit::max('reihenfolge') ?? 0) + 1;
 
         Taetigkeit::create([
@@ -61,11 +61,11 @@ class TaetigkeitController extends Controller
             'reihenfolge'    => $naechstePosition,
         ]);
 
-        return back()->with('success', "Taetigkeit \"{$request->name}\" wurde hinzugefuegt.");
+        return back()->with('success', "Tätigkeit \"{$request->name}\" wurde hinzugefügt.");
     }
 
     /**
-     * Aktualisiert den Namen einer Taetigkeit.
+     * Aktualisiert den Namen einer Tätigkeit.
      */
     public function update(Request $request, Taetigkeit $taetigkeit): RedirectResponse
     {
@@ -76,13 +76,13 @@ class TaetigkeitController extends Controller
             'abrechnungsart' => ['required', 'in:stundensatz,pauschal'],
         ], [
             'name.required'           => 'Die Bezeichnung ist erforderlich.',
-            'name.unique'             => 'Diese Taetigkeit existiert bereits.',
+            'name.unique'             => 'Diese Tätigkeit existiert bereits.',
             'name.max'                => 'Die Bezeichnung darf maximal 100 Zeichen lang sein.',
             'stundensatz.required'    => 'Der Betrag ist erforderlich.',
             'stundensatz.numeric'     => 'Der Betrag muss eine Zahl sein.',
             'stundensatz.min'         => 'Der Betrag darf nicht negativ sein.',
             'abrechnungsart.required' => 'Die Abrechnungsart ist erforderlich.',
-            'abrechnungsart.in'       => 'Ungueltiger Wert fuer Abrechnungsart.',
+            'abrechnungsart.in'       => 'Ungültiger Wert für Abrechnungsart.',
         ]);
 
         $taetigkeit->update([
@@ -91,17 +91,17 @@ class TaetigkeitController extends Controller
             'abrechnungsart' => $request->abrechnungsart,
         ]);
 
-        return back()->with('success', "Taetigkeit wurde auf \"{$request->name}\" geaendert.");
+        return back()->with('success', "Tätigkeit wurde auf \"{$request->name}\" geändert.");
     }
 
     /**
-     * Loescht eine Taetigkeit endgueltig.
+     * Löscht eine Tätigkeit endgültig.
      */
     public function destroy(Taetigkeit $taetigkeit): RedirectResponse
     {
         $name = $taetigkeit->name;
         $taetigkeit->delete();
 
-        return back()->with('success', "Taetigkeit \"{$name}\" wurde geloescht.");
+        return back()->with('success', "Tätigkeit \"{$name}\" wurde gelöscht.");
     }
 }

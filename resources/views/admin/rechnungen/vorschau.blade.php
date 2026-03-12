@@ -1,10 +1,10 @@
 {{--
     Rechnungsvorschau (editierbar) – ALS Panel
     =============================================
-    Zeigt eine druckaehnliche Vorschau der Rechnung mit vollstaendig
+    Zeigt eine druckähnliche Vorschau der Rechnung mit vollständig
     editierbaren Feldern. Der Nutzer kann alle Texte, Positionen,
     Preise und Footer-Angaben direkt in der Vorschau anpassen,
-    bevor die Rechnung endgueltig erstellt und als PDF gespeichert wird.
+    bevor die Rechnung endgültig erstellt und als PDF gespeichert wird.
 
     Zugriff: Nur Administratoren
     Daten vom Controller: $auftraggeber, $positionen, $nettobetrag,
@@ -15,7 +15,7 @@
 {{-- ====== SEITEN-STYLES ====== --}}
 <style>
     /*
-     * Hintergrundfarbe der Seite – hellgrau, damit das weisse
+     * Hintergrundfarbe der Seite – hellgrau, damit das weiße
      * Papier optisch hervorsticht (wie ein Druck-Preview)
      */
     body, .app-main {
@@ -23,7 +23,7 @@
     }
 
     /*
-     * Das "Papier": zentriertes weisses Blatt mit Schatten
+     * Das "Papier": zentriertes weißes Blatt mit Schatten
      * Breite 820px entspricht in etwa einer A4-Seite im Browser
      */
     #rechnungs-papier {
@@ -109,7 +109,7 @@
         color: #0d6efd;
     }
 
-    /* Empfaenger: fett, groesser */
+    /* Empfänger: fett, größer */
     .empfaenger-block {
         font-weight: bold;
         font-size: 10.5pt;
@@ -215,9 +215,9 @@
 
 {{-- ====== AKTIONSLEISTE OBEN ====== --}}
 <div class="aktions-leiste">
-    {{-- Zurueck zum Rechnungsformular --}}
+    {{-- Zurück zum Rechnungsformular --}}
     <a href="{{ route('admin.rechnungen.create') }}" class="btn btn-outline-secondary btn-sm">
-        &#8592; Zurueck
+        &#8592; Zurück
     </a>
     {{-- Submit-Button als erstes, damit Tastatur-Nutzer ihn finden --}}
     <button type="submit" form="rechnungs-formular" class="btn btn-primary btn-sm ms-auto">
@@ -228,8 +228,8 @@
 {{--
     HAUPT-FORMULAR
     ==============
-    Alle editierbaren Felder werden in diesem Formular uebertragen.
-    Das Formular umschliesst das gesamte Papier-Div.
+    Alle editierbaren Felder werden in diesem Formular übertragen.
+    Das Formular umschließt das gesamte Papier-Div.
 --}}
 <form id="rechnungs-formular"
       method="POST"
@@ -259,19 +259,19 @@
         {{-- Blaue Trennlinie unterhalb des Headers --}}
         <hr class="blaue-linie">
 
-        {{-- ====== ABSENDERZEILE (blau, klein) ====== --}}
+        {{-- ====== ABSENDERZEILE (blau, klein) – Wert aus Firmeneinstellungen ====== --}}
         <div class="absender-zeile">
             <input type="text"
                    name="absender"
                    class="editable-field"
-                   value="ALS Dienstleistungen – Frankfurter Landstraße.91a, 64291 Darmstadt"
+                   value="{{ $einstellung->absender }}"
                    title="Absenderzeile bearbeiten">
         </div>
 
-        {{-- ====== EMPFAENGER-ADRESSE ====== --}}
+        {{-- ====== EMPFÄNGER-ADRESSE ====== --}}
         <div class="empfaenger-block">
             @php
-                // Adresse in Zeilen aufteilen: Zeile 0 = Strasse, Zeile 1 = PLZ + Ort
+                // Adresse in Zeilen aufteilen: Zeile 0 = Straße, Zeile 1 = PLZ + Ort
                 $adresseZeilen = array_values(array_filter(
                     array_map('trim', explode("\n", $auftraggeber->adresse ?? ''))
                 ));
@@ -284,13 +284,13 @@
                    value="{{ $auftraggeber->firmenname }}"
                    title="Firmenname">
 
-            {{-- Zeile 2: Strasse + Hausnummer --}}
+            {{-- Zeile 2: Straße + Hausnummer --}}
             <input type="text"
                    name="adresse_zeilen[]"
                    class="editable-field"
                    value="{{ $adresseZeilen[0] ?? '' }}"
                    placeholder="Straße, Hausnummer"
-                   title="Strasse und Hausnummer">
+                   title="Straße und Hausnummer">
 
             {{-- Zeile 3: PLZ + Ort --}}
             <input type="text"
@@ -304,7 +304,7 @@
         {{-- ====== RECHNUNGS-NR + DATUM ====== --}}
         <div class="d-flex justify-content-between align-items-center mb-3">
             <div>
-                {{-- Vorschau der naechsten Rechnungsnummer (wird beim Speichern endgueltig vergeben) --}}
+                {{-- Vorschau der nächsten Rechnungsnummer (wird beim Speichern endgültig vergeben) --}}
                 <span class="rech-nr">
                     Rechnung Nr. <strong>{{ $vorschauNummer }}</strong>
                 </span>
@@ -321,19 +321,19 @@
             </div>
         </div>
 
-        {{-- ====== ANREDE + EINLEITUNGSTEXT ====== --}}
+        {{-- ====== ANREDE + EINLEITUNGSTEXT (Werte aus Firmeneinstellungen) ====== --}}
         <div style="margin-bottom: 6px;">
             <input type="text"
                    name="anrede"
                    class="editable-field"
-                   value="Sehr geehrte Damen und Herren,"
+                   value="{{ $einstellung->anrede }}"
                    title="Anrede">
         </div>
         <div style="margin-bottom: 14px;">
             <input type="text"
                    name="einleitung"
                    class="editable-field"
-                   value="Hiermit stellen wir Ihnen folgende Leistungen in Rechnung:"
+                   value="{{ $einstellung->einleitung }}"
                    title="Einleitungstext">
         </div>
 
@@ -348,14 +348,14 @@
                     <th style="width:70px">Einheit</th>
                     <th class="r" style="width:90px">Einzelpreis</th>
                     <th class="r" style="width:90px">Gesamtpreis</th>
-                    <th style="width:32px"></th>{{-- Loeschen-Spalte --}}
+                    <th style="width:32px"></th>{{-- Löschen-Spalte --}}
                 </tr>
             </thead>
             <tbody id="positionen-body">
                 {{--
                     Jede Position wird als editierbare Zeile dargestellt.
-                    Index i wird fuer die Array-Felder positionen[i][...] verwendet.
-                    JavaScript aktualisiert die Indices bei Aenderungen.
+                    Index i wird für die Array-Felder positionen[i][...] verwendet.
+                    JavaScript aktualisiert die Indices bei Änderungen.
                 --}}
                 @foreach($positionen as $i => $pos)
                     @php
@@ -366,7 +366,7 @@
                         {{-- Positionsnummer (wird per JS neu nummeriert) --}}
                         <td class="pos-nr">{{ $i + 1 }}</td>
 
-                        {{-- Beschreibung/Name der Taetigkeit --}}
+                        {{-- Beschreibung/Name der Tätigkeit --}}
                         <td>
                             <input type="text"
                                    name="positionen[{{ $i }}][name]"
@@ -396,7 +396,7 @@
                                    {{ $istPauschal ? 'disabled' : '' }}
                                    title="Menge"
                                    style="width:50px; text-align:right;">
-                            {{-- Bei deaktivierten Feldern (Pauschal): Wert separat uebertragen --}}
+                            {{-- Bei deaktivierten Feldern (Pauschal): Wert separat übertragen --}}
                             @if($istPauschal)
                                 <input type="hidden" name="positionen[{{ $i }}][menge]" value="1">
                             @endif
@@ -425,7 +425,7 @@
                                    style="width:80px; text-align:right;">
                         </td>
 
-                        {{-- Gesamtpreis: wird per JS automatisch berechnet, Hidden-Feld fuer Uebertragung --}}
+                        {{-- Gesamtpreis: wird per JS automatisch berechnet, Hidden-Feld für Übertragung --}}
                         <td class="r pos-gesamtpreis-anzeige">
                             {{ number_format($pos['gesamtpreis'], 2, ',', '.') }} &euro;
                         </td>
@@ -434,7 +434,7 @@
                                class="pos-gesamtpreis-hidden"
                                value="{{ number_format($pos['gesamtpreis'], 2, '.', '') }}">
 
-                        {{-- Loeschen-Button fuer diese Zeile --}}
+                        {{-- Löschen-Button für diese Zeile --}}
                         <td>
                             <button type="button"
                                     class="btn btn-sm btn-outline-danger btn-zeile-loeschen"
@@ -451,7 +451,7 @@
             </tfoot>
         </table>
 
-        {{-- "Position hinzufuegen"-Button unter der Tabelle --}}
+        {{-- "Position hinzufügen"-Button unter der Tabelle --}}
         <div class="mt-2 mb-3">
             <button type="button"
                     id="btn-position-hinzufuegen"
@@ -460,10 +460,10 @@
             </button>
         </div>
 
-        {{-- ====== SUMMENBLOCK (volle Breite, Leerespalte links) ====== --}}
+        {{-- ====== SUMMENBLOCK (volle Breite, Leerspalte links) ====== --}}
         <table class="summen" style="width:100%;">
             <colgroup>
-                {{-- Linke Haelfte: Platzhalter --}}
+                {{-- Linke Hälfte: Platzhalter --}}
                 <col style="width:55%">
                 {{-- Label-Spalte --}}
                 <col>
@@ -504,24 +504,23 @@
             </tr>
         </table>
 
-        {{-- ====== ZAHLUNGSTEXT ====== --}}
+        {{-- ====== ZAHLUNGSTEXT – Wert aus Firmeneinstellungen ====== --}}
         <div class="zahlungstext">
             <textarea name="zahlungstext"
                       class="editable-textarea"
                       rows="2"
-                      title="Zahlungstext bearbeiten">Bitte überweisen Sie den Betrag innerhalb von 14 Tagen auf unser unten genanntes Konto, und geben Sie bitte die Rechnungsnummer als Verwendungszweck.</textarea>
+                      title="Zahlungstext bearbeiten">{{ $einstellung->zahlungstext }}</textarea>
         </div>
 
-        {{-- ====== GRUSS ====== --}}
+        {{-- ====== GRUSS – Wert aus Firmeneinstellungen ====== --}}
         <div class="gruss-block">
             <textarea name="gruss"
                       class="editable-textarea"
                       rows="2"
-                      title="Gruss bearbeiten">Mit freundlichen Grüßen
-ALS Dienstleistungen</textarea>
+                      title="Gruss bearbeiten">{{ $einstellung->gruss }}</textarea>
         </div>
 
-        {{-- ====== FOOTER: 3 Spalten ====== --}}
+        {{-- ====== FOOTER: 3 Spalten – Werte aus Firmeneinstellungen ====== --}}
         <div class="footer-block">
             <div class="row g-3">
                 {{-- Spalte 1: Firmeninfo --}}
@@ -530,10 +529,7 @@ ALS Dienstleistungen</textarea>
                     <textarea name="footer_firma"
                               class="editable-textarea"
                               rows="3"
-                              title="Footer: Firmeninfo">ALS Dienstleistungen
-Frankfurter Landstraße.91a
-64291 Darmstadt
-Steuer Nr.: 00780160575</textarea>
+                              title="Footer: Firmeninfo">{{ $einstellung->footer_firma }}</textarea>
                 </div>
                 {{-- Spalte 2: Kontakt --}}
                 <div class="col-4">
@@ -541,9 +537,7 @@ Steuer Nr.: 00780160575</textarea>
                     <textarea name="footer_kontakt"
                               class="editable-textarea"
                               rows="3"
-                              title="Footer: Kontaktinfos">Hasan Aljasem
-Tel: 017670549424
-E-Mail: als.dienstleistungen@gmail.com</textarea>
+                              title="Footer: Kontaktinfos">{{ $einstellung->footer_kontakt }}</textarea>
                 </div>
                 {{-- Spalte 3: Bankverbindung (etwas nach rechts verschoben) --}}
                 <div class="col-4" style="padding-left: 32px;">
@@ -551,9 +545,7 @@ E-Mail: als.dienstleistungen@gmail.com</textarea>
                     <textarea name="footer_bank"
                               class="editable-textarea"
                               rows="3"
-                              title="Footer: Bankverbindung">Sparkasse Darmstadt
-IBAN: DE94 5085 0150 0080 0254 91
-BIC: HELADEFIDAS</textarea>
+                              title="Footer: Bankverbindung">{{ $einstellung->footer_bank }}</textarea>
                 </div>
             </div>
         </div>
@@ -564,7 +556,7 @@ BIC: HELADEFIDAS</textarea>
 {{-- ====== AKTIONSLEISTE UNTEN ====== --}}
 <div class="aktions-leiste mt-3">
     <a href="{{ route('admin.rechnungen.create') }}" class="btn btn-outline-secondary btn-sm">
-        &#8592; Zurueck
+        &#8592; Zurück
     </a>
     <button type="submit" form="rechnungs-formular" class="btn btn-primary btn-sm ms-auto">
         Rechnung erstellen &amp; PDF generieren
@@ -603,7 +595,7 @@ function berechneZeile(row) {
         if (mengeInput) {
             mengeInput.value    = 1;
             mengeInput.disabled = true;
-            // Sicherstellen, dass ein Hidden-Input den Wert 1 uebertraegt
+            // Sicherstellen, dass ein Hidden-Input den Wert 1 überträgt
             let hiddenMenge = row.querySelector('.pos-menge-hidden');
             if (!hiddenMenge) {
                 hiddenMenge = document.createElement('input');
@@ -673,13 +665,13 @@ function berechneSummen() {
 
 /**
  * Aktualisiert die Indices aller Positionen-Zeilen.
- * Wird nach dem Hinzufuegen oder Loeschen einer Zeile aufgerufen.
+ * Wird nach dem Hinzufügen oder Löschen einer Zeile aufgerufen.
  *
  * Aktualisiert:
  * - Positionsnummer (sichtbare "Pos"-Spalte)
  * - data-index Attribut der Zeile
  * - name-Attribute aller Inputs in der Zeile (positionen[N][...])
- * - Klasse fuer Zebrastreifen (gerade/ungerade)
+ * - Klasse für Zebrastreifen (gerade/ungerade)
  */
 function aktualisiereIndices() {
     const zeilen = document.querySelectorAll('#positionen-body tr');
@@ -703,9 +695,9 @@ function aktualisiereIndices() {
 }
 
 /**
- * Haengt Event-Listener an eine neue Positions-Zeile.
- * Wird sowohl fuer bestehende Zeilen (beim Laden) als auch
- * fuer neu hinzugefuegte Zeilen aufgerufen.
+ * Hängt Event-Listener an eine neue Positions-Zeile.
+ * Wird sowohl für bestehende Zeilen (beim Laden) als auch
+ * für neu hinzugefügte Zeilen aufgerufen.
  *
  * @param {HTMLTableRowElement} zeile
  */
@@ -719,7 +711,7 @@ function bindZeileEvents(zeile) {
         });
     }
 
-    // Menge: Neuberechnung bei Aenderung
+    // Menge: Neuberechnung bei Änderung
     const mengeInput = zeile.querySelector('.pos-menge');
     if (mengeInput) {
         mengeInput.addEventListener('input', function () {
@@ -728,7 +720,7 @@ function bindZeileEvents(zeile) {
         });
     }
 
-    // Einzelpreis: Neuberechnung bei Aenderung
+    // Einzelpreis: Neuberechnung bei Änderung
     const einzelpreisInput = zeile.querySelector('.pos-einzelpreis');
     if (einzelpreisInput) {
         einzelpreisInput.addEventListener('input', function () {
@@ -737,7 +729,7 @@ function bindZeileEvents(zeile) {
         });
     }
 
-    // Loeschen-Button: Zeile entfernen
+    // Löschen-Button: Zeile entfernen
     const loeschenBtn = zeile.querySelector('.btn-zeile-loeschen');
     if (loeschenBtn) {
         loeschenBtn.addEventListener('click', function () {
@@ -755,10 +747,10 @@ function bindZeileEvents(zeile) {
 }
 
 /**
- * Template-Zeile fuer neue Positionen.
- * Erstellt eine leere Zeile mit allen noetigen Feldern.
+ * Template-Zeile für neue Positionen.
+ * Erstellt eine leere Zeile mit allen nötigen Feldern.
  *
- * @param {number} idx  Index fuer die name-Attribute
+ * @param {number} idx  Index für die name-Attribute
  * @returns {HTMLTableRowElement}
  */
 function erstelleNeueZeile(idx) {
@@ -811,18 +803,18 @@ function erstelleNeueZeile(idx) {
 
 // ====== INITIALISIERUNG beim Seitenladen ======
 
-// Event-Listener fuer alle bereits vorhandenen Zeilen setzen
+// Event-Listener für alle bereits vorhandenen Zeilen setzen
 document.querySelectorAll('#positionen-body tr').forEach(function (zeile) {
     bindZeileEvents(zeile);
 });
 
-// "Position hinzufuegen"-Button
+// "Position hinzufügen"-Button
 document.getElementById('btn-position-hinzufuegen').addEventListener('click', function () {
-    // Naechsten Index ermitteln (Anzahl vorhandener Zeilen)
+    // Nächsten Index ermitteln (Anzahl vorhandener Zeilen)
     const anzahl = document.querySelectorAll('#positionen-body tr').length;
     const neueZeile = erstelleNeueZeile(anzahl);
 
-    // Zeile an die Tabelle anhaengen und Events binden
+    // Zeile an die Tabelle anhängen und Events binden
     document.getElementById('positionen-body').appendChild(neueZeile);
     bindZeileEvents(neueZeile);
 
@@ -833,7 +825,7 @@ document.getElementById('btn-position-hinzufuegen').addEventListener('click', fu
     neueZeile.querySelector('.pos-name')?.focus();
 });
 
-// Textareas: automatische Hoehe (kein Scrollbar sichtbar)
+// Textareas: automatische Höhe (kein Scrollbar sichtbar)
 document.querySelectorAll('.editable-textarea').forEach(function (ta) {
     ta.style.height = 'auto';
     ta.style.height = ta.scrollHeight + 'px';

@@ -3,15 +3,15 @@
 /**
  * Model: Auftrag
  *
- * Repraesentiert einen Arbeitsauftrag, den der Admin einem Mitarbeitenden zuweist.
+ * Repräsentiert einen Arbeitsauftrag, den der Admin einem Mitarbeitenden zuweist.
  *
  * Status-Ablauf:
  *   gesendet   -> Admin hat den Auftrag versendet, Mitarbeitender sieht ihn
- *   bestaetigt -> Mitarbeitender hat den Auftrag nach Ausfuehrung bestaetigt;
+ *   bestätigt  -> Mitarbeitender hat den Auftrag nach Ausführung bestätigt;
  *                 dabei wird automatisch ein Zeiteintrag (status=offen) erstellt
  *
  * Beziehungen:
- *   - gehoert zu: Mitarbeiter, Auftraggeber, Taetigkeit
+ *   - gehört zu: Mitarbeiter, Auftraggeber, Tätigkeit
  */
 
 namespace App\Models;
@@ -34,16 +34,19 @@ class Auftrag extends Model
         'bis',
         'pause',
         'status',
+        'zeit_geaendert',
+        'zeit_aenderung_info',
     ];
 
     /**
-     * Typ-Umwandlungen fuer Attribute
+     * Typ-Umwandlungen für Attribute
      */
     protected function casts(): array
     {
         return [
-            'datum' => 'date',
-            'pause' => 'boolean',
+            'datum'          => 'date',
+            'pause'          => 'boolean',
+            'zeit_geaendert' => 'boolean',
         ];
     }
 
@@ -68,7 +71,7 @@ class Auftrag extends Model
     }
 
     /**
-     * Art der Taetigkeit
+     * Art der Tätigkeit
      */
     public function taetigkeit()
     {
@@ -102,7 +105,7 @@ class Auftrag extends Model
     }
 
     /**
-     * Gibt die Von-Zeit im Format HH:MM zurueck
+     * Gibt die Von-Zeit im Format HH:MM zurück
      */
     public function vonFormatiert(): string
     {
@@ -110,7 +113,7 @@ class Auftrag extends Model
     }
 
     /**
-     * Gibt die Bis-Zeit im Format HH:MM zurueck
+     * Gibt die Bis-Zeit im Format HH:MM zurück
      */
     public function bisFormatiert(): string
     {

@@ -12,7 +12,7 @@ use Illuminate\View\View;
 /**
  * AuthenticatedSessionController – Verwaltung der Benutzeranmeldung
  *
- * Dieser Controller ist verantwortlich fuer:
+ * Dieser Controller ist verantwortlich für:
  * - Anzeige des Login-Formulars
  * - Verarbeitung der Anmeldedaten und Authentifizierung
  * - Abmeldung (Logout) des Benutzers
@@ -39,20 +39,20 @@ class AuthenticatedSessionController extends Controller
      * 1. Validierung der Eingaben (E-Mail + Passwort) via LoginRequest
      * 2. Authentifizierung des Benutzers
      * 3. Session-Erneuerung zum Schutz vor Session-Fixation-Angriffen
-     * 4. Weiterleitung zum Dashboard (rollenabhaengig via route 'dashboard')
+     * 4. Weiterleitung zum Dashboard (rollenabhängig via route 'dashboard')
      *
      * @param  \App\Http\Requests\Auth\LoginRequest  $request  Validierter Login-Request
      * @return \Illuminate\Http\RedirectResponse
      */
     public function store(LoginRequest $request): RedirectResponse
     {
-        // Benutzer authentifizieren (prueft E-Mail und Passwort)
+        // Benutzer authentifizieren (prüft E-Mail und Passwort)
         $request->authenticate();
 
         // Session-ID erneuern zum Schutz vor Session-Fixation
         $request->session()->regenerate();
 
-        // Weiterleitung zum urspruenglich angefragten Ziel oder zum Dashboard
+        // Weiterleitung zum ursprünglich angefragten Ziel oder zum Dashboard
         return redirect()->intended(route('dashboard', absolute: false));
     }
 
@@ -61,7 +61,7 @@ class AuthenticatedSessionController extends Controller
      *
      * Schritte:
      * 1. Benutzer aus der Web-Guard abmelden
-     * 2. Session invalidieren (alle Session-Daten loeschen)
+     * 2. Session invalidieren (alle Session-Daten löschen)
      * 3. CSRF-Token erneuern
      * 4. Weiterleitung zur Startseite (Login)
      *

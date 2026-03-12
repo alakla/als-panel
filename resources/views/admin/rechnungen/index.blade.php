@@ -1,4 +1,4 @@
-{{-- Rechnungsliste – Uebersicht aller erstellten Rechnungen --}}
+{{-- Rechnungsliste – Übersicht aller erstellten Rechnungen --}}
 {{-- Zugriff: Nur Administratoren (Middleware: auth + admin) --}}
 {{-- Zeigt alle Rechnungen mit Betrag, Status und PDF-Download-Link --}}
 <x-app-layout>
@@ -33,7 +33,64 @@
         })();
     </script>
 
-    {{-- Rechnungstabelle: Alle Rechnungen, neueste zuerst (orderBy created_at desc via latest()) --}}
+    {{-- Filterleiste: Auftraggeber, Status, Monat und Jahr --}}
+    <div class="card border-0 shadow-sm mb-4">
+        <div class="card-body py-3">
+            <form method="GET" action="{{ route('admin.rechnungen.index') }}" id="filterForm">
+                <div class="d-flex gap-2 align-items-center flex-wrap">
+
+                    {{-- Filter: Auftraggeber --}}
+                    <select name="auftraggeber_id" class="form-select form-select-sm" style="width:200px"
+                            onchange="document.getElementById('filterForm').submit()">
+                        <option value="">Alle Auftraggeber</option>
+                        @foreach($auftraggeber as $ag)
+                            <option value="{{ $ag->id }}" {{ $auftraggeberId == $ag->id ? 'selected' : '' }}>
+                                {{ $ag->firmenname }}
+                            </option>
+                        @endforeach
+                    </select>
+
+                    {{-- Filter: Status --}}
+                    <select name="status" class="form-select form-select-sm" style="width:140px"
+                            onchange="document.getElementById('filterForm').submit()">
+                        <option value="alle"      {{ $filterStatus === 'alle'      ? 'selected' : '' }}>Alle Status</option>
+                        <option value="offen"     {{ $filterStatus === 'offen'     ? 'selected' : '' }}>Offen</option>
+                        <option value="bezahlt"   {{ $filterStatus === 'bezahlt'   ? 'selected' : '' }}>Bezahlt</option>
+                        <option value="storniert" {{ $filterStatus === 'storniert' ? 'selected' : '' }}>Storniert</option>
+                    </select>
+
+                    {{-- Monatsfilter: Monat- und Jahr-Auswahl --}}
+                    @php
+                        [$filterJahrVal, $filterMonatVal] = explode('-', $monat);
+                        $monate = [1=>'Januar',2=>'Februar',3=>'März',4=>'April',5=>'Mai',6=>'Juni',
+                                   7=>'Juli',8=>'August',9=>'September',10=>'Oktober',11=>'November',12=>'Dezember'];
+                    @endphp
+                    <select name="monat_nr" class="form-select form-select-sm" style="width:130px"
+                            onchange="document.getElementById('filterForm').submit()">
+                        @foreach($monate as $nr => $name)
+                            <option value="{{ $nr }}" {{ (int)$filterMonatVal === $nr ? 'selected' : '' }}>{{ $name }}</option>
+                        @endforeach
+                    </select>
+                    <select name="jahr" class="form-select form-select-sm" style="width:90px"
+                            onchange="document.getElementById('filterForm').submit()">
+                        @foreach($jahre as $j)
+                            <option value="{{ $j }}" {{ (int)$filterJahrVal === $j ? 'selected' : '' }}>{{ $j }}</option>
+                        @endforeach
+                    </select>
+
+                    {{-- Zurücksetzen --}}
+                    @if($filterStatus !== 'alle' || $auftraggeberId || $monat !== now()->format('Y-m'))
+                        <a href="{{ route('admin.rechnungen.index') }}" class="btn btn-outline-secondary btn-sm">
+                            Zurücksetzen
+                        </a>
+                    @endif
+
+                </div>
+            </form>
+        </div>
+    </div>
+
+    {{-- Rechnungstabelle --}}
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <table class="table table-hover mb-0">
@@ -85,7 +142,7 @@
                                     <span class="badge badge-status bg-danger">Storniert</span>
                                 @else
                                     {{-- Standardstatus direkt nach Rechnungserstellung --}}
-                                    <span class="badge badge-status bg-warning text-dark">Offen</span>
+                                    <span class="badge badge-status badge-orange">Offen</span>
                                 @endif
                             </td>
 
@@ -113,10 +170,29 @@
                 </tbody>
             </table>
         </div>
-        {{-- Paginierung: 15 Rechnungen pro Seite (definiert in RechnungController::index) --}}
+        {{-- Statusübersicht: Anzahl pro Zustand für den gewählten Monat --}}
+        <div class="card-footer bg-white border-top py-2">
+            <div class="d-flex gap-3 flex-wrap align-items-center">
+                <span class="text-muted small">Gesamt:</span>
+                @if(($statusCounts['offen'] ?? 0) > 0)
+                    <span class="small"><span class="badge badge-orange me-1">{{ $statusCounts['offen'] }}</span>Offen</span>
+                @endif
+                @if(($statusCounts['bezahlt'] ?? 0) > 0)
+                    <span class="small"><span class="badge bg-success me-1">{{ $statusCounts['bezahlt'] }}</span>Bezahlt</span>
+                @endif
+                @if(($statusCounts['storniert'] ?? 0) > 0)
+                    <span class="small"><span class="badge bg-danger me-1">{{ $statusCounts['storniert'] }}</span>Storniert</span>
+                @endif
+                @if($statusCounts->isEmpty())
+                    <span class="text-muted small">Keine Einträge</span>
+                @endif
+            </div>
+        </div>
+
+        {{-- Paginierung --}}
         @if($rechnungen->hasPages())
             <div class="card-footer bg-white">
-                {{ $rechnungen->links() }}
+                {{ $rechnungen->withQueryString()->links() }}
             </div>
         @endif
     </div>

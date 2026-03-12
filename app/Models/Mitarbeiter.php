@@ -7,20 +7,21 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Mitarbeiter-Model
  *
- * Repraesentiert einen Mitarbeitenden der Personaldienstleistungsfirma.
- * Jeder Mitarbeiter ist mit einem Benutzerkonto (User) verknuepft.
+ * Repräsentiert einen Mitarbeitenden der Personaldienstleistungsfirma.
+ * Jeder Mitarbeiter ist mit einem Benutzerkonto (User) verknüpft.
  *
- * Datenbankname wird explizit angegeben, da Laravel sonst 'mitarbeiters' verwenden wuerde.
+ * Datenbankname wird explizit angegeben, da Laravel sonst 'mitarbeiters' verwenden würde.
  */
 class Mitarbeiter extends Model
 {
     // Expliziter Tabellenname, da die deutsche Mehrzahl nicht dem Laravel-Standard entspricht
     protected $table = 'mitarbeiter';
 
-    // Felder, die per Massenverarbeitung befuellt werden duerfen
+    // Felder, die per Massenverarbeitung befüllt werden dürfen
     protected $fillable = [
         'user_id',
         'personalnummer',
+        'telefon',
         'einstellungsdatum',
         'stundenlohn',
         'status',
@@ -42,7 +43,7 @@ class Mitarbeiter extends Model
 
     /**
      * Beziehung zu den Zeiterfassungen (1:n)
-     * Ein Mitarbeiter kann viele Zeiteintraege haben.
+     * Ein Mitarbeiter kann viele Zeiteinträge haben.
      */
     public function zeiterfassungen()
     {
@@ -50,8 +51,8 @@ class Mitarbeiter extends Model
     }
 
     /**
-     * Beziehung zu den Arbeitsauftraegen (1:n)
-     * Ein Mitarbeiter kann viele zugewiesene Auftraege haben.
+     * Beziehung zu den Arbeitsaufträgen (1:n)
+     * Ein Mitarbeiter kann viele zugewiesene Aufträge haben.
      */
     public function auftraege()
     {

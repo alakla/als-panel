@@ -23,21 +23,30 @@
                     <form method="POST" action="{{ route('admin.mitarbeiter.store') }}">
                         @csrf
 
-                        {{-- Abschnitt: Benutzerkonto-Daten --}}
-                        <h6 class="text-muted mb-3 border-bottom pb-2">Login-Daten</h6>
-
+                        {{-- Zeile 1: Name + Telefon --}}
                         <div class="row g-3 mb-3">
-                            {{-- Name --}}
                             <div class="col-md-6">
-                                <label for="name" class="form-label">Vollstaendiger Name <span class="text-danger">*</span></label>
+                                <label for="name" class="form-label">Vollständiger Name <span class="text-danger">*</span></label>
                                 <input type="text" id="name" name="name" value="{{ old('name') }}"
                                     class="form-control @error('name') is-invalid @enderror" required>
                                 @error('name')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
+                            <div class="col-md-6">
+                                <label for="telefon" class="form-label">Telefonnummer</label>
+                                <input type="tel" id="telefon" name="telefon"
+                                    value="{{ old('telefon') }}"
+                                    class="form-control @error('telefon') is-invalid @enderror"
+                                    placeholder="z.B. 0176 12345678">
+                                @error('telefon')
+                                    <div class="invalid-feedback">{{ $message }}</div>
+                                @enderror
+                            </div>
+                        </div>
 
-                            {{-- E-Mail --}}
+                        {{-- Zeile 2: E-Mail + Passwort --}}
+                        <div class="row g-3 mb-4">
                             <div class="col-md-6">
                                 <label for="email" class="form-label">E-Mail-Adresse <span class="text-danger">*</span></label>
                                 <input type="email" id="email" name="email" value="{{ old('email') }}"
@@ -46,8 +55,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
-                            {{-- Passwort --}}
                             <div class="col-md-6">
                                 <label for="password" class="form-label">Passwort <span class="text-danger">*</span></label>
                                 <input type="password" id="password" name="password"
@@ -59,22 +66,22 @@
                             </div>
                         </div>
 
-                        {{-- Abschnitt: Stammdaten --}}
-                        <h6 class="text-muted mb-3 border-bottom pb-2 mt-4">Stammdaten</h6>
+                        {{-- Trennlinie + Stammdaten --}}
+                        <h6 class="text-muted mb-3 border-bottom pb-2">Stammdaten</h6>
 
+                        {{-- Zeile 3: Personalnummer + Einstellungsdatum + Stundenlohn --}}
                         <div class="row g-3">
-                            {{-- Personalnummer --}}
                             <div class="col-md-4">
                                 <label for="personalnummer" class="form-label">Personalnummer <span class="text-danger">*</span></label>
                                 <input type="text" id="personalnummer" name="personalnummer"
-                                    value="{{ old('personalnummer') }}"
+                                    value="{{ old('personalnummer', $vorschlagNr) }}"
                                     class="form-control @error('personalnummer') is-invalid @enderror" required>
                                 @error('personalnummer')
                                     <div class="invalid-feedback">{{ $message }}</div>
+                                @else
+                                    <div class="form-text">Automatisch vorgeschlagen – kann geändert werden.</div>
                                 @enderror
                             </div>
-
-                            {{-- Einstellungsdatum --}}
                             <div class="col-md-4">
                                 <label for="einstellungsdatum" class="form-label">Einstellungsdatum <span class="text-danger">*</span></label>
                                 <input type="date" id="einstellungsdatum" name="einstellungsdatum"
@@ -84,8 +91,6 @@
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror
                             </div>
-
-                            {{-- Stundenlohn --}}
                             <div class="col-md-4">
                                 <label for="stundenlohn" class="form-label">Stundenlohn (€) <span class="text-danger">*</span></label>
                                 <div class="input-group">

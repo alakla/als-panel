@@ -1,12 +1,12 @@
-{{-- Taetigkeitenverwaltung – Admin kann Taetigkeiten hinzufuegen, umbenennen und loeschen --}}
+{{-- Tätigkeitenverwaltung – Admin kann Tätigkeiten hinzufügen, umbenennen und löschen --}}
 {{-- Diese Liste erscheint bei Mitarbeitenden als Auswahl in der Zeiterfassung --}}
 <x-app-layout>
 
     {{-- Seitenkopf --}}
     <div class="row mb-4 align-items-center">
         <div class="col">
-            <h4 class="fw-bold mb-0">Taetigkeiten verwalten</h4>
-            <p class="text-muted small mb-0">Vordefinierte Beschreibungen fuer die Mitarbeiter-Zeiterfassung</p>
+            <h4 class="fw-bold mb-0">Tätigkeiten verwalten</h4>
+            <p class="text-muted small mb-0">Vordefinierte Beschreibungen für die Mitarbeiter-Zeiterfassung</p>
         </div>
         <div class="col-auto">
             <span class="text-muted small">
@@ -38,11 +38,11 @@
 
     <div class="row">
 
-        {{-- Linke Spalte: Liste der vorhandenen Taetigkeiten --}}
+        {{-- Linke Spalte: Liste der vorhandenen Tätigkeiten --}}
         <div class="col-md-7">
             <div class="card border-0 shadow-sm">
                 <div class="card-header bg-white fw-semibold">
-                    Vorhandene Taetigkeiten
+                    Vorhandene Tätigkeiten
                     <span class="badge bg-secondary ms-1">{{ $taetigkeiten->count() }}</span>
                 </div>
                 <div class="card-body p-0">
@@ -82,24 +82,24 @@
                                             Bearbeiten
                                         </button>
 
-                                        {{-- Loeschen-Formular mit Bestaetigung --}}
+                                        {{-- Löschen-Formular mit Bestätigung --}}
                                         <form method="POST"
                                               action="{{ route('admin.taetigkeiten.destroy', $t) }}"
                                               class="d-inline"
-                                              data-confirm='Taetigkeit wirklich loeschen?' data-confirm-btn="danger">
+                                              data-confirm='Tätigkeit wirklich löschen?' data-confirm-btn="danger">
                                             @csrf
                                             @method('DELETE')
-                                            <button type="submit" class="btn btn-sm btn-outline-danger">Loeschen</button>
+                                            <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
                                         </form>
                                     </td>
                                 </tr>
 
-                                {{-- Bearbeiten-Modal fuer jede Taetigkeit --}}
+                                {{-- Bearbeiten-Modal für jede Tätigkeit --}}
                                 <div class="modal fade" id="editModal{{ $t->id }}" tabindex="-1">
                                     <div class="modal-dialog">
                                         <div class="modal-content">
                                             <div class="modal-header">
-                                                <h6 class="modal-title">Taetigkeit bearbeiten</h6>
+                                                <h6 class="modal-title">Tätigkeit bearbeiten</h6>
                                                 <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                                             </div>
                                             <form method="POST" action="{{ route('admin.taetigkeiten.update', $t) }}">
@@ -112,7 +112,7 @@
                                                                class="form-control" required maxlength="100">
                                                     </div>
 
-                                                    {{-- Abrechnungsart waehlen: Stundensatz oder Pauschal --}}
+                                                    {{-- Abrechnungsart wählen: Stundensatz oder Pauschal --}}
                                                     <div class="mb-3">
                                                         <label class="form-label small">Abrechnungsart</label>
                                                         <div class="d-flex gap-3">
@@ -167,7 +167,7 @@
                             @empty
                                 <tr>
                                     <td colspan="5" class="text-center text-muted py-4">
-                                        Noch keine Taetigkeiten vorhanden.
+                                        Noch keine Tätigkeiten vorhanden.
                                     </td>
                                 </tr>
                             @endforelse
@@ -177,10 +177,10 @@
             </div>
         </div>
 
-        {{-- Rechte Spalte: Neue Taetigkeit hinzufuegen --}}
+        {{-- Rechte Spalte: Neue Tätigkeit hinzufügen --}}
         <div class="col-md-5">
             <div class="card border-0 shadow-sm">
-                <div class="card-header bg-white fw-semibold">Neue Taetigkeit hinzufuegen</div>
+                <div class="card-header bg-white fw-semibold">Neue Tätigkeit hinzufügen</div>
                 <div class="card-body">
                     <form method="POST" action="{{ route('admin.taetigkeiten.store') }}">
                         @csrf
@@ -220,7 +220,7 @@
                             @enderror
                         </div>
 
-                        {{-- Betrag: Bezeichnung und Einheit haengen von der Abrechnungsart ab --}}
+                        {{-- Betrag: Bezeichnung und Einheit hängen von der Abrechnungsart ab --}}
                         <div class="mb-3">
                             <label for="stundensatz" class="form-label" id="neuBetragLabel">
                                 Stundensatz (€/Std.) <span class="text-danger">*</span>
@@ -237,14 +237,14 @@
                             @enderror
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100">+ Hinzufuegen</button>
+                        <button type="submit" class="btn btn-primary w-100">+ Hinzufügen</button>
                     </form>
 
                     <hr>
                     <p class="small text-muted mb-0">
-                        <strong>Hinweis:</strong> Diese Taetigkeiten erscheinen als Auswahloptionen
+                        <strong>Hinweis:</strong> Diese Tätigkeiten erscheinen als Auswahloptionen
                         in der Zeiterfassung der Mitarbeitenden.
-                        Neue Eintraege werden automatisch ans Ende der Liste gesetzt.
+                        Neue Einträge werden automatisch ans Ende der Liste gesetzt.
                     </p>
                 </div>
             </div>
@@ -254,7 +254,7 @@
 
     {{-- JavaScript: Label und Einheit dynamisch anpassen je nach Abrechnungsart --}}
     <script>
-        // Einheit im "Neue Taetigkeit"-Formular aktualisieren
+        // Einheit im "Neue Tätigkeit"-Formular aktualisieren
         function updateNeuLabel() {
             var istPauschal = document.getElementById('neu_pauschal').checked;
             document.getElementById('neuBetragLabel').innerHTML =

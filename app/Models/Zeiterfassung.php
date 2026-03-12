@@ -7,8 +7,8 @@ use Illuminate\Database\Eloquent\Model;
 /**
  * Zeiterfassung-Model
  *
- * Repraesentiert einen taeglichen Arbeitszeitein trag eines Mitarbeitenden.
- * Der Eintrag durchlaeuft einen Freigabe-Workflow: offen -> freigegeben/abgelehnt.
+ * Repräsentiert einen täglichen Arbeitszeiteintrags eines Mitarbeitenden.
+ * Der Eintrag durchläuft einen Freigabe-Workflow: offen -> freigegeben/abgelehnt.
  *
  * Datenbankname wird explizit angegeben.
  */
@@ -17,11 +17,11 @@ class Zeiterfassung extends Model
     // Expliziter Tabellenname
     protected $table = 'zeiterfassungen';
 
-    // Felder, die per Massenverarbeitung befuellt werden duerfen
+    // Felder, die per Massenverarbeitung befüllt werden dürfen
     protected $fillable = [
         'mitarbeiter_id',
         'auftraggeber_id',
-        'taetigkeit_id',    // Referenz zur Taetigkeit (fuer Stundensatz bei Rechnung)
+        'taetigkeit_id',    // Referenz zur Tätigkeit (für Stundensatz bei Rechnung)
         'datum',
         'stunden',
         'beschreibung',
@@ -30,7 +30,7 @@ class Zeiterfassung extends Model
         'freigegeben_am',
     ];
 
-    // Automatische Typumwandlung fuer Datums- und Zeitfelder
+    // Automatische Typumwandlung für Datums- und Zeitfelder
     protected $casts = [
         'datum'          => 'date',
         'freigegeben_am' => 'datetime',
@@ -38,7 +38,7 @@ class Zeiterfassung extends Model
 
     /**
      * Beziehung zum Mitarbeitenden (n:1)
-     * Jeder Zeiteintrag gehoert zu genau einem Mitarbeitenden.
+     * Jeder Zeiteintrag gehört zu genau einem Mitarbeitenden.
      */
     public function mitarbeiter()
     {
@@ -47,7 +47,7 @@ class Zeiterfassung extends Model
 
     /**
      * Beziehung zum Auftraggeber (n:1)
-     * Jeder Zeiteintrag gehoert zu genau einem Auftraggeber.
+     * Jeder Zeiteintrag gehört zu genau einem Auftraggeber.
      */
     public function auftraggeber()
     {
@@ -55,8 +55,8 @@ class Zeiterfassung extends Model
     }
 
     /**
-     * Beziehung zur Taetigkeit (n:1)
-     * Gibt die Taetigkeit zurueck – wird fuer den Stundensatz in der Rechnung benoetigt.
+     * Beziehung zur Tätigkeit (n:1)
+     * Gibt die Tätigkeit zurück – wird für den Stundensatz in der Rechnung benötigt.
      */
     public function taetigkeit()
     {
@@ -65,7 +65,7 @@ class Zeiterfassung extends Model
 
     /**
      * Beziehung zum freigebenden Administrator (n:1)
-     * Gibt den Admin zurueck, der den Eintrag freigegeben hat.
+     * Gibt den Admin zurück, der den Eintrag freigegeben hat.
      */
     public function freigegebenVon()
     {

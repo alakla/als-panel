@@ -1,5 +1,5 @@
 {{-- Formular zum Bearbeiten eines vorhandenen Zeiteintrags --}}
-{{-- Zugriff: Nur Mitarbeitende (nur eigene, offene Eintraege) --}}
+{{-- Zugriff: Nur Mitarbeitende (nur eigene, offene Einträge) --}}
 <x-app-layout>
 
     {{-- Seitenkopf --}}
@@ -33,7 +33,7 @@
                                 </label>
                                 <select id="auftraggeber_id" name="auftraggeber_id"
                                     class="form-select @error('auftraggeber_id') is-invalid @enderror" required>
-                                    <option value="">— Auftraggeber auswaehlen —</option>
+                                    <option value="">— Auftraggeber auswählen —</option>
                                     @foreach($auftraggeber as $ag)
                                         <option value="{{ $ag->id }}"
                                             {{ old('auftraggeber_id', $zeiterfassung->auftraggeber_id) == $ag->id ? 'selected' : '' }}>
@@ -77,7 +77,7 @@
                                 </div>
                             </div>
 
-                            {{-- Taetigkeitsbeschreibung: Auswahl aus DB-Vorgaben (vom Admin verwaltbar) oder eigene Eingabe --}}
+                            {{-- Tätigkeitsbeschreibung: Auswahl aus DB-Vorgaben (vom Admin verwaltbar) oder eigene Eingabe --}}
                             <div class="col-12">
                                 @php
                                     // Aktuellen Wert ermitteln (nach Validierungsfehler: old(), sonst DB-Wert)
@@ -86,13 +86,13 @@
                                     // Namen der Vorgaben aus der DB-Collection extrahieren
                                     $vorgabenNamen = $taetigkeiten->pluck('name')->toArray();
 
-                                    // Pruefen ob der gespeicherte Wert einer Vorgabe entspricht
+                                    // Prüfen ob der gespeicherte Wert einer Vorgabe entspricht
                                     $istVorgabe = in_array($aktuellerWert, $vorgabenNamen);
                                 @endphp
 
-                                <label class="form-label">Taetigkeitsbeschreibung <span class="text-muted fw-normal small">(optional)</span></label>
+                                <label class="form-label">Tätigkeitsbeschreibung <span class="text-muted fw-normal small">(optional)</span></label>
 
-                                {{-- Dropdown: vorhandenen Wert vorauswaehlen falls moeglich --}}
+                                {{-- Dropdown: vorhandenen Wert vorauswählen falls möglich --}}
                                 <select id="beschreibung_auswahl" class="form-select mb-2"
                                         onchange="handleBeschreibungAuswahl(this)">
                                     <option value="" {{ !$aktuellerWert ? 'selected' : '' }}>— Keine Angabe —</option>
@@ -106,10 +106,10 @@
                                     </option>
                                 </select>
 
-                                {{-- Freitextfeld: nur sichtbar wenn "Sonstiges" ausgewaehlt --}}
+                                {{-- Freitextfeld: nur sichtbar wenn "Sonstiges" ausgewählt --}}
                                 <textarea id="beschreibung" name="beschreibung" rows="2"
                                     class="form-control @error('beschreibung') is-invalid @enderror"
-                                    placeholder="Bitte Taetigkeit beschreiben..."
+                                    placeholder="Bitte Tätigkeit beschreiben..."
                                     style="{{ ($aktuellerWert && !$istVorgabe) ? '' : 'display:none' }}">{{ $aktuellerWert }}</textarea>
                                 @error('beschreibung')
                                     <div class="invalid-feedback">{{ $message }}</div>
@@ -137,7 +137,7 @@
                         <div class="d-flex justify-content-end gap-2 mt-4 pt-3 border-top">
                             <a href="{{ route('mitarbeiter.zeiterfassung.index') }}"
                                class="btn btn-outline-secondary">Abbrechen</a>
-                            <button type="submit" class="btn btn-primary">Aenderungen speichern</button>
+                            <button type="submit" class="btn btn-primary">Änderungen speichern</button>
                         </div>
 
                     </form>

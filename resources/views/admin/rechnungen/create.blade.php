@@ -32,7 +32,7 @@
                                 </label>
                                 <select id="auftraggeber_id" name="auftraggeber_id"
                                     class="form-select @error('auftraggeber_id') is-invalid @enderror" required>
-                                    <option value="">— Auftraggeber auswaehlen —</option>
+                                    <option value="">— Auftraggeber auswählen —</option>
                                     @foreach($auftraggeber as $ag)
                                         <option value="{{ $ag->id }}"
                                             {{ old('auftraggeber_id') == $ag->id ? 'selected' : '' }}>
@@ -90,14 +90,14 @@
                 <div class="card-body">
                     <h6 class="fw-semibold mb-3">Wie funktioniert die Rechnungserstellung?</h6>
                     <ol class="small text-muted mb-0">
-                        <li class="mb-2">Auftraggeber und Abrechnungszeitraum auswaehlen</li>
-                        <li class="mb-2">Vorschau pruefen: Welche freigegebenen Zeiteintraege werden abgerechnet?</li>
+                        <li class="mb-2">Auftraggeber und Abrechnungszeitraum auswählen</li>
+                        <li class="mb-2">Vorschau prüfen: Welche freigegebenen Zeiteinträge werden abgerechnet?</li>
                         <li class="mb-2">Rechnung erstellen: Das System berechnet automatisch Netto, MwSt und Brutto</li>
                         <li class="mb-2">Eine PDF-Datei wird automatisch generiert und steht zum Download bereit</li>
                     </ol>
                     <hr>
                     <p class="small text-muted mb-0">
-                        <strong>Hinweis:</strong> Nur Zeiteintraege mit Status
+                        <strong>Hinweis:</strong> Nur Zeiteinträge mit Status
                         <span class="badge bg-success">Freigegeben</span>
                         werden in die Rechnung aufgenommen.
                     </p>

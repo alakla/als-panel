@@ -32,7 +32,7 @@
                                 </label>
                                 <select id="auftraggeber_id" name="auftraggeber_id"
                                     class="form-select @error('auftraggeber_id') is-invalid @enderror" required>
-                                    <option value="">— Auftraggeber auswaehlen —</option>
+                                    <option value="">— Auftraggeber auswählen —</option>
                                     @foreach($auftraggeber as $ag)
                                         <option value="{{ $ag->id }}"
                                             {{ old('auftraggeber_id') == $ag->id ? 'selected' : '' }}>
@@ -77,11 +77,11 @@
                                 </div>
                             </div>
 
-                            {{-- Taetigkeitsbeschreibung: Auswahl aus Vorgaben (vom Admin verwaltbar) oder eigene Eingabe --}}
+                            {{-- Tätigkeitsbeschreibung: Auswahl aus Vorgaben (vom Admin verwaltbar) oder eigene Eingabe --}}
                             <div class="col-12">
-                                <label class="form-label">Taetigkeitsbeschreibung <span class="text-muted fw-normal small">(optional)</span></label>
+                                <label class="form-label">Tätigkeitsbeschreibung <span class="text-muted fw-normal small">(optional)</span></label>
 
-                                {{-- Dropdown mit Taetigkeiten aus der Datenbank --}}
+                                {{-- Dropdown mit Tätigkeiten aus der Datenbank --}}
                                 <select id="beschreibung_auswahl" class="form-select mb-2"
                                         onchange="handleBeschreibungAuswahl(this)">
                                     <option value="">— Keine Angabe —</option>
@@ -94,7 +94,7 @@
                                 {{-- Freitextfeld: nur bei "Sonstiges" sichtbar --}}
                                 <textarea id="beschreibung" name="beschreibung" rows="2"
                                     class="form-control @error('beschreibung') is-invalid @enderror"
-                                    placeholder="Bitte Taetigkeit beschreiben..." style="display:none">{{ old('beschreibung') }}</textarea>
+                                    placeholder="Bitte Tätigkeit beschreiben..." style="display:none">{{ old('beschreibung') }}</textarea>
                                 @error('beschreibung')
                                     <div class="invalid-feedback">{{ $message }}</div>
                                 @enderror

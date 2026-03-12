@@ -1,8 +1,8 @@
-{{-- Zeiterfassungs-Uebersicht des Mitarbeitenden --}}
-{{-- Zeigt alle eigenen Zeiteintraege mit Filter- und Loeschfunktion --}}
+{{-- Zeiterfassungs-Übersicht des Mitarbeitenden --}}
+{{-- Zeigt alle eigenen Zeiteinträge mit Filter- und Löschfunktion --}}
 <x-app-layout>
 
-    {{-- Seitenkopf mit Titel und Button fuer neuen Eintrag --}}
+    {{-- Seitenkopf mit Titel und Button für neuen Eintrag --}}
     <div class="row mb-4 align-items-center">
         <div class="col">
             <h4 class="fw-bold mb-0">Meine Zeiterfassung</h4>
@@ -21,7 +21,7 @@
             <div class="card border-0 shadow-sm">
                 <div class="card-body d-flex justify-content-between align-items-center">
                     <div>
-                        <p class="text-muted small mb-1">Stunden im ausgewaehlten Zeitraum</p>
+                        <p class="text-muted small mb-1">Stunden im ausgewählten Zeitraum</p>
                         <h3 class="fw-bold mb-0 text-primary">
                             {{ number_format($gesamtstunden, 2, ',', '.') }} Std.
                         </h3>
@@ -36,12 +36,12 @@
     <div class="card border-0 shadow-sm mb-4">
         <div class="card-body">
             <form method="GET" action="{{ route('mitarbeiter.zeiterfassung.index') }}" class="row g-2 align-items-end">
-                {{-- Monatsfilter: submit bei Aenderung --}}
+                {{-- Monatsfilter: submit bei Änderung --}}
                 <div class="col-md-4">
                     <label class="form-label small text-muted">Monat</label>
                     <input type="month" name="monat" value="{{ $monat }}" class="form-control" onchange="this.form.submit()">
                 </div>
-                {{-- Auftraggeberfilter: submit bei Aenderung --}}
+                {{-- Auftraggeberfilter: submit bei Änderung --}}
                 <div class="col-md-4">
                     <label class="form-label small text-muted">Auftraggeber</label>
                     <select name="auftraggeber_id" class="form-select" onchange="this.form.submit()">
@@ -54,13 +54,13 @@
                     </select>
                 </div>
                 <div class="col-auto">
-                    <a href="{{ route('mitarbeiter.zeiterfassung.index') }}" class="btn btn-outline-secondary">Zuruecksetzen</a>
+                    <a href="{{ route('mitarbeiter.zeiterfassung.index') }}" class="btn btn-outline-secondary">Zurücksetzen</a>
                 </div>
             </form>
         </div>
     </div>
 
-    {{-- Liste der Zeiteintraege --}}
+    {{-- Liste der Zeiteinträge --}}
     <div class="card border-0 shadow-sm">
         <div class="card-body p-0">
             <table class="table table-hover mb-0">
@@ -90,21 +90,21 @@
                                 @elseif($ze->status === 'abgelehnt')
                                     <span class="badge bg-danger badge-status">Abgelehnt</span>
                                 @else
-                                    <span class="badge bg-warning text-dark badge-status">Offen</span>
+                                    <span class="badge badge-orange badge-status">Offen</span>
                                 @endif
                             </td>
                             <td class="text-end">
-                                {{-- Bearbeiten und Loeschen nur fuer offene Eintraege --}}
+                                {{-- Bearbeiten und Löschen nur für offene Einträge --}}
                                 @if($ze->status === 'offen')
                                     <a href="{{ route('mitarbeiter.zeiterfassung.edit', $ze) }}"
                                        class="btn btn-sm btn-outline-primary">Bearbeiten</a>
                                     <form method="POST"
                                           action="{{ route('mitarbeiter.zeiterfassung.destroy', $ze) }}"
                                           class="d-inline"
-                                          data-confirm="Diesen Eintrag wirklich loeschen?" data-confirm-btn="danger">
+                                          data-confirm="Diesen Eintrag wirklich löschen?" data-confirm-btn="danger">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="btn btn-sm btn-outline-danger">Loeschen</button>
+                                        <button type="submit" class="btn btn-sm btn-outline-danger">Löschen</button>
                                     </form>
                                 @else
                                     <span class="text-muted small">Gesperrt</span>
@@ -114,7 +114,7 @@
                     @empty
                         <tr>
                             <td colspan="6" class="text-center text-muted py-4">
-                                Keine Zeiteintraege fuer den ausgewaehlten Zeitraum gefunden.
+                                Keine Zeiteinträge für den ausgewählten Zeitraum gefunden.
                             </td>
                         </tr>
                     @endforelse

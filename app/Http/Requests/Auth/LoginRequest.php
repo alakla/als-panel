@@ -12,19 +12,19 @@ use Illuminate\Validation\ValidationException;
 /**
  * LoginRequest – Validierung und Authentifizierung der Anmeldedaten
  *
- * Dieser FormRequest ist verantwortlich fuer:
+ * Dieser FormRequest ist verantwortlich für:
  * - Validierung der eingegebenen E-Mail-Adresse und des Passworts
  * - Authentifizierung des Benutzers gegen die Datenbank
  * - Schutz gegen Brute-Force-Angriffe (Rate Limiting: max. 5 Versuche)
  *
  * Sicherheitshinweis: Nach 5 fehlgeschlagenen Versuchen wird das Login
- * fuer eine bestimmte Zeit gesperrt (Lockout).
+ * für eine bestimmte Zeit gesperrt (Lockout).
  */
 class LoginRequest extends FormRequest
 {
     /**
      * Bestimmt, ob der Benutzer berechtigt ist, diese Anfrage zu stellen.
-     * Da die Login-Seite fuer alle zugaenglich ist, wird immer true zurueckgegeben.
+     * Da die Login-Seite für alle zugänglich ist, wird immer true zurückgegeben.
      *
      * @return bool
      */
@@ -34,9 +34,9 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Gibt die Validierungsregeln fuer die Anmeldedaten zurueck.
+     * Gibt die Validierungsregeln für die Anmeldedaten zurück.
      *
-     * - email: Pflichtfeld, muss gueltiges E-Mail-Format haben
+     * - email: Pflichtfeld, muss gültiges E-Mail-Format haben
      * - password: Pflichtfeld, muss eine Zeichenkette sein
      *
      * @return array<string, mixed>
@@ -53,7 +53,7 @@ class LoginRequest extends FormRequest
      * Authentifiziert den Benutzer anhand der eingegebenen Zugangsdaten.
      *
      * Ablauf:
-     * 1. Pruefen ob Rate-Limit erreicht wurde (Lockout-Schutz)
+     * 1. Prüfen ob Rate-Limit erreicht wurde (Lockout-Schutz)
      * 2. Anmeldeversuch mit E-Mail, Passwort und "Angemeldet bleiben"-Option
      * 3. Bei Misserfolg: Rate-Limiter erhoehen und Fehler ausgeben
      * 4. Bei Erfolg: Rate-Limiter zuruecksetzen
@@ -62,7 +62,7 @@ class LoginRequest extends FormRequest
      */
     public function authenticate(): void
     {
-        // Sicherstellen, dass das Rate-Limit nicht ueberschritten wurde
+        // Sicherstellen, dass das Rate-Limit nicht überschritten wurde
         $this->ensureIsNotRateLimited();
 
         // Authentifizierungsversuch mit den eingegebenen Zugangsdaten
@@ -76,27 +76,27 @@ class LoginRequest extends FormRequest
             ]);
         }
 
-        // Erfolgreiche Anmeldung: Rate-Limiter zuruecksetzen
+        // Erfolgreiche Anmeldung: Rate-Limiter zurücksetzen
         RateLimiter::clear($this->throttleKey());
     }
 
     /**
-     * Prueft, ob das Rate-Limit fuer diesen Login-Versuch erreicht wurde.
+     * Prüft, ob das Rate-Limit für diesen Login-Versuch erreicht wurde.
      *
      * Erlaubt maximal 5 Fehlversuche pro E-Mail-Adresse und IP-Adresse.
-     * Bei Ueberschreitung wird ein Lockout-Event ausgeloest und eine
-     * Fehlermeldung mit der Wartezeit zurueckgegeben.
+     * Bei Überschreitung wird ein Lockout-Event ausgelöst und eine
+     * Fehlermeldung mit der Wartezeit zurückgegeben.
      *
      * @throws \Illuminate\Validation\ValidationException
      */
     public function ensureIsNotRateLimited(): void
     {
-        // Pruefen ob weniger als 5 Versuche gemacht wurden
+        // Prüfen ob weniger als 5 Versuche gemacht wurden
         if (! RateLimiter::tooManyAttempts($this->throttleKey(), 5)) {
             return;
         }
 
-        // Lockout-Event ausloesen (fuer Logging/Benachrichtigungen)
+        // Lockout-Event auslösen (für Logging/Benachrichtigungen)
         event(new Lockout($this));
 
         // Verbleibende Wartezeit in Sekunden ermitteln
@@ -112,12 +112,12 @@ class LoginRequest extends FormRequest
     }
 
     /**
-     * Erstellt einen eindeutigen Schluessel fuer das Rate-Limiting.
+     * Erstellt einen eindeutigen Schlüssel für das Rate-Limiting.
      *
-     * Der Schluessel besteht aus E-Mail-Adresse und IP-Adresse,
+     * Der Schlüssel besteht aus E-Mail-Adresse und IP-Adresse,
      * um Angriffe von verschiedenen Konten von einer IP zu erkennen.
      *
-     * @return string  Eindeutiger Rate-Limit-Schluessel
+     * @return string  Eindeutiger Rate-Limit-Schlüssel
      */
     public function throttleKey(): string
     {

@@ -5,14 +5,17 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\AuftraggeberRequest;
 use App\Models\Auftraggeber;
+use App\Models\Auftrag;
+use App\Models\Rechnung;
 use Illuminate\Http\RedirectResponse;
+use Illuminate\Http\Request;
 use Illuminate\View\View;
 
 /**
  * AuftraggeberController – Verwaltung der Auftraggeber (CRUD)
  *
  * Verwaltet alle Kundenunternehmen, an die Mitarbeitende vermittelt werden.
- * Der Stundensatz wird pro Taetigkeit verwaltet (nicht mehr beim Auftraggeber).
+ * Der Stundensatz wird pro Tätigkeit verwaltet (nicht mehr beim Auftraggeber).
  *
  * Zugriff: Nur Administratoren (Middleware: auth + admin)
  */
@@ -21,7 +24,7 @@ class AuftraggeberController extends Controller
     /**
      * Zeigt eine Liste aller Auftraggeber an.
      *
-     * Unterstuetzt optionale Suche nach Firmenname oder Ansprechpartner.
+     * Unterstützt optionale Suche nach Firmenname oder Ansprechpartner.
      *
      * @return \Illuminate\View\View
      */
@@ -78,17 +81,100 @@ class AuftraggeberController extends Controller
     /**
      * Zeigt die Detailseite eines Auftraggebers.
      *
-     * Laedt alle zugehoerigen Zeiterfassungen und Rechnungen.
+     * Zeigt alle Aufträge für diesen Auftraggeber mit Filter nach Status und Monat/Jahr.
+     * Identischer Filter wie auf der Mitarbeiter-Detailseite.
      *
-     * @param  \App\Models\Auftraggeber  $auftraggeber
+     * @param  Request               $request      HTTP-Anfrage mit optionalen Filterparametern
+     * @param  Auftraggeber          $auftraggeber Der anzuzeigende Auftraggeber
      * @return \Illuminate\View\View
      */
-    public function show(Auftraggeber $auftraggeber): View
+    public function show(Request $request, Auftraggeber $auftraggeber): View
     {
-        // Zeiterfassungen und Rechnungen mitladen
-        $auftraggeber->load(['zeiterfassungen.mitarbeiter.user', 'rechnungen']);
+        // Statusfilter (wie Aufträge-Seite)
+        $filterStatus = $request->input('status', 'alle');
+        if (!in_array($filterStatus, ['alle', 'gesendet', 'bestaetigt', 'freigegeben', 'abgelehnt'])) {
+            $filterStatus = 'alle';
+        }
 
-        return view('admin.auftraggeber.show', compact('auftraggeber'));
+        // Monat und Jahr aus getrennten Feldern lesen
+        $filterJahr  = (int) $request->input('jahr',     now()->year);
+        $filterMonat = (int) $request->input('monat_nr', now()->month);
+        $monat = sprintf('%04d-%02d', $filterJahr, $filterMonat);
+
+        // Monatsnamen auf Deutsch
+        $monatsnamen = [1=>'Januar',2=>'Februar',3=>'März',4=>'April',5=>'Mai',6=>'Juni',
+                        7=>'Juli',8=>'August',9=>'September',10=>'Oktober',11=>'November',12=>'Dezember'];
+        $filterMonatLabel = $monatsnamen[$filterMonat] . ' ' . $filterJahr;
+
+        // Verfügbare Jahre: vom ältesten Auftrag dieses Auftraggebers bis nächstes Jahr
+        $aeltestesJahr = Auftrag::where('auftraggeber_id', $auftraggeber->id)
+            ->selectRaw('YEAR(MIN(datum)) as jahr')
+            ->value('jahr') ?? now()->year;
+        $jahre = range(now()->year + 1, $aeltestesJahr);
+
+        // Aufträge laden (gefiltert)
+        $auftraege = Auftrag::with(['mitarbeiter.user', 'taetigkeit'])
+            ->where('auftraggeber_id', $auftraggeber->id)
+            ->when($filterStatus !== 'alle', fn($q) => $q->where('status', $filterStatus))
+            ->whereYear('datum', $filterJahr)
+            ->whereMonth('datum', $filterMonat)
+            ->orderByDesc('datum')
+            ->orderByDesc('von')
+            ->get();
+
+        // Anzahl pro Status für den aktuellen Monat (unabhängig vom Statusfilter)
+        $statusCounts = Auftrag::where('auftraggeber_id', $auftraggeber->id)
+            ->whereYear('datum', $filterJahr)
+            ->whereMonth('datum', $filterMonat)
+            ->selectRaw('status, COUNT(*) as anzahl')
+            ->groupBy('status')
+            ->pluck('anzahl', 'status');
+
+        // ── Rechnungen-Filter (separate Parameter mit Prefix "r_") ──────────────
+        $rFilterStatus = $request->input('r_status', 'alle');
+        if (!in_array($rFilterStatus, ['alle', 'offen', 'bezahlt', 'storniert'])) {
+            $rFilterStatus = 'alle';
+        }
+        $rFilterJahr  = (int) $request->input('r_jahr',     now()->year);
+        $rFilterMonat = (int) $request->input('r_monat_nr', now()->month);
+        $rMonat = sprintf('%04d-%02d', $rFilterJahr, $rFilterMonat);
+
+        // Verfügbare Jahre für Rechnungen
+        $rAeltestesJahr = Rechnung::where('auftraggeber_id', $auftraggeber->id)
+            ->selectRaw('YEAR(MIN(rechnungsdatum)) as jahr')
+            ->value('jahr') ?? now()->year;
+        $rJahre = range(now()->year + 1, $rAeltestesJahr);
+
+        // Rechnungen gefiltert laden
+        $rechnungen = Rechnung::where('auftraggeber_id', $auftraggeber->id)
+            ->when($rFilterStatus !== 'alle', fn($q) => $q->where('status', $rFilterStatus))
+            ->whereYear('rechnungsdatum', $rFilterJahr)
+            ->whereMonth('rechnungsdatum', $rFilterMonat)
+            ->orderByDesc('rechnungsdatum')
+            ->get();
+
+        // Anzahl pro Status für Rechnungen (unabhängig vom Statusfilter)
+        $rStatusCounts = Rechnung::where('auftraggeber_id', $auftraggeber->id)
+            ->whereYear('rechnungsdatum', $rFilterJahr)
+            ->whereMonth('rechnungsdatum', $rFilterMonat)
+            ->selectRaw('status, COUNT(*) as anzahl')
+            ->groupBy('status')
+            ->pluck('anzahl', 'status');
+
+        return view('admin.auftraggeber.show', compact(
+            'auftraggeber',
+            'auftraege',
+            'filterStatus',
+            'monat',
+            'jahre',
+            'filterMonatLabel',
+            'statusCounts',
+            'rechnungen',
+            'rFilterStatus',
+            'rMonat',
+            'rJahre',
+            'rStatusCounts'
+        ));
     }
 
     /**
@@ -122,7 +208,7 @@ class AuftraggeberController extends Controller
     /**
      * Deaktiviert oder reaktiviert einen Auftraggeber.
      *
-     * Statt Loeschen wird der is_active-Status umgeschaltet,
+     * Statt Löschen wird der is_active-Status umgeschaltet,
      * damit historische Daten (Zeiterfassungen, Rechnungen) erhalten bleiben.
      *
      * @param  \App\Models\Auftraggeber  $auftraggeber

@@ -17,7 +17,7 @@
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarMain">
-                {{-- Hauptnavigation: rollenabhaengige Links --}}
+                {{-- Hauptnavigation: rollenabhängige Links --}}
                 <ul class="navbar-nav me-auto">
                     @if(Auth::user()->isAdmin())
                         {{-- Admin-Navigation --}}
@@ -37,14 +37,34 @@
                             <a class="nav-link {{ request()->routeIs('admin.rechnungen.*') ? 'active' : '' }}"
                                href="{{ route('admin.rechnungen.index') }}">Rechnungen</a>
                         </li>
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('admin.taetigkeiten.*') ? 'active' : '' }}"
-                               href="{{ route('admin.taetigkeiten.index') }}">Taetigkeiten</a>
-                        </li>
-                        {{-- Auftraege: Admin weist Arbeitsauftraege zu --}}
+                        {{-- Aufträge: Admin weist Arbeitsaufträge zu --}}
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.auftraege.*') ? 'active' : '' }}"
-                               href="{{ route('admin.auftraege.index') }}">Auftraege</a>
+                               href="{{ route('admin.auftraege.index') }}">Aufträge</a>
+                        </li>
+                        {{-- Einstellung-Dropdown: Tätigkeiten + Rechnungeinstellungen --}}
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle {{ request()->routeIs('admin.taetigkeiten.*', 'admin.einstellungen.*') ? 'active' : '' }}"
+                               href="#"
+                               role="button"
+                               data-bs-toggle="dropdown"
+                               aria-expanded="false">
+                                Einstellung
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li>
+                                    <a class="dropdown-item {{ request()->routeIs('admin.taetigkeiten.*') ? 'active' : '' }}"
+                                       href="{{ route('admin.taetigkeiten.index') }}">
+                                        Tätigkeiten
+                                    </a>
+                                </li>
+                                <li>
+                                    <a class="dropdown-item {{ request()->routeIs('admin.einstellungen.*') ? 'active' : '' }}"
+                                       href="{{ route('admin.einstellungen.edit') }}">
+                                        Rechnungeinstellungen
+                                    </a>
+                                </li>
+                            </ul>
                         </li>
                     @else
                         {{-- Mitarbeiter-Navigation --}}
@@ -52,10 +72,10 @@
                             <a class="nav-link {{ request()->routeIs('mitarbeiter.dashboard') ? 'active' : '' }}"
                                href="{{ route('mitarbeiter.dashboard') }}">Dashboard</a>
                         </li>
-                        {{-- Auftraege: Mitarbeitender sieht seine zugewiesenen Einsaetze --}}
+                        {{-- Aufträge: Mitarbeitender sieht seine zugewiesenen Einsätze --}}
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('mitarbeiter.auftraege.*') ? 'active' : '' }}"
-                               href="{{ route('mitarbeiter.auftraege.index') }}">Auftraege</a>
+                               href="{{ route('mitarbeiter.auftraege.index') }}">Aufträge</a>
                         </li>
                     @endif
                 </ul>
@@ -82,44 +102,49 @@
         </div>
     </nav>
 
-    {{-- Flash Messages: verschwinden nach 4 Sekunden automatisch --}}
+    {{-- Flash Messages: verschwinden automatisch (Erfolg: 4 Sek., Fehler: 5 Sek.) --}}
     <div class="container mt-3" id="flashMessages">
         @if (session('success'))
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
+            <div class="alert alert-success alert-dismissible fade show" id="flash-success" role="alert">
                 {{ session('success') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+            <script>
+                setTimeout(function () {
+                    var el = document.getElementById('flash-success');
+                    if (el) { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 1500); }
+                }, 4000);
+            </script>
         @endif
         @if (session('error'))
-            <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            <div class="alert alert-danger alert-dismissible fade show" id="flash-error" role="alert">
                 {{ session('error') }}
                 <button type="button" class="btn-close" data-bs-dismiss="alert"></button>
             </div>
+            <script>
+                setTimeout(function () {
+                    var el = document.getElementById('flash-error');
+                    if (el) { el.classList.remove('show'); setTimeout(function () { el.remove(); }, 1500); }
+                }, 5000);
+            </script>
         @endif
     </div>
     <style>
-        /* Langsames Ausblenden fuer alle Meldungen (1.5 Sekunden statt Standard 0.15s) */
+        /* Langsames Ausblenden für alle Meldungen (1.5 Sekunden statt Standard 0.15s) */
         .alert.fade { transition: opacity 1.5s ease !important; }
-        /* Einheitliche Breite fuer alle Status-Badges */
+        /* Einheitliche Breite für alle Status-Badges */
         .badge-status { display: block; text-align: center; min-width: 90px; }
-        /* Alle Tabellenspalten: Ueberschriften und Werte zentriert */
+        /* Orangefarbenes Badge für Status "Ausstehend" (Mitarbeiter) und "Offen" (Admin) */
+        .badge-orange { background-color: #fd7e14 !important; color: #fff !important; }
+        /* Alle Tabellenspalten: Überschriften und Werte zentriert */
         .table th, .table td { text-align: center; vertical-align: middle; }
         /* Kalender-Picker-Indikator wiederherstellen (von Bootstrap-Reset versteckt) */
         input[type="date"]::-webkit-calendar-picker-indicator,
         input[type="month"]::-webkit-calendar-picker-indicator { display: block !important; opacity: 0.6; cursor: pointer; }
     </style>
-    <script>
-        // Alle Flash-Meldungen auf der Seite nach 4 Sekunden automatisch ausblenden
-        setTimeout(function () {
-            document.querySelectorAll('.alert.alert-dismissible').forEach(function (el) {
-                var alert = new bootstrap.Alert(el);
-                alert.close();
-            });
-        }, 4000);
-    </script>
 
     <script>
-        // Debounce-Funktion fuer Live-Suche: verzoegert das Abschicken um 350ms nach letzter Eingabe
+        // Debounce-Funktion für Live-Suche: verzögert das Abschicken um 350ms nach letzter Eingabe
         var debounceTimer = null;
         function debounceSubmit(formId) {
             clearTimeout(debounceTimer);
@@ -147,12 +172,12 @@
         });
     </script>
 
-    {{-- Globales Bestaetigungs-Modal (wird per data-confirm ausgeloest) --}}
+    {{-- Globales Bestätigungs-Modal (wird per data-confirm ausgelöst) --}}
     <div class="modal fade" id="globalConfirmModal" tabindex="-1">
         <div class="modal-dialog modal-sm modal-dialog-centered">
             <div class="modal-content">
                 <div class="modal-header border-0 pb-0">
-                    <h6 class="modal-title fw-bold" id="globalConfirmTitle">Bestaetigung</h6>
+                    <h6 class="modal-title fw-bold" id="globalConfirmTitle">Bestätigung</h6>
                     <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
                 </div>
                 <div class="modal-body text-center py-3">
@@ -160,13 +185,13 @@
                 </div>
                 <div class="modal-footer border-0 pt-0 justify-content-center gap-2">
                     <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Abbrechen</button>
-                    <button type="button" class="btn btn-sm" id="globalConfirmBtn">Bestaetigen</button>
+                    <button type="button" class="btn btn-sm" id="globalConfirmBtn">Bestätigen</button>
                 </div>
             </div>
         </div>
     </div>
     <script>
-        // Globaler Bestaetigungs-Handler fuer data-confirm Attribute
+        // Globaler Bestätigungs-Handler für data-confirm Attribute
         // Verwendung: <form data-confirm="Nachricht" data-confirm-btn="danger|warning|success">
         //         oder <button data-confirm="Nachricht" data-confirm-btn="danger">
         (function () {
@@ -178,7 +203,7 @@
                 var el = e.target.closest('[data-confirm]');
                 if (!el) return;
 
-                // Nur wenn kein eigenes form-submit-handling benoetigt wird
+                // Nur wenn kein eigenes form-submit-handling benötigt wird
                 var form = el.closest('form');
                 if (form && el.tagName !== 'BUTTON') return;
 

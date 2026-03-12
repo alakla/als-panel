@@ -6,19 +6,19 @@
     Es verwendet KEIN Bootstrap – nur inline CSS und einen style-Block,
     da DomPDF keine externe CSS-Dateien laden kann.
 
-    Uebergebene Variablen (alle kommen aus RechnungController::generierePdf()):
-      $rechnung        - Rechnung-Model (fuer Nummer, Datum, Zeitraum)
+    Übergebene Variablen (alle kommen aus RechnungController::generierePdf()):
+      $rechnung        - Rechnung-Model (für Nummer, Datum, Zeitraum)
       $positionen      - array, direkt iterierbar (vom Admin bearbeitet)
       $absender        - string (Absenderzeile unter der Trennlinie)
-      $empfaenger_name - string (Firmenname des Empfaengers)
-      $adresse_zeilen  - array of strings (je eine Zeile der Empfaengeradresse)
+      $empfaenger_name - string (Firmenname des Empfängers)
+      $adresse_zeilen  - array of strings (je eine Zeile der Empfängeradresse)
       $anrede          - string
       $einleitung      - string
-      $zahlungstext    - string (kann mehrere Saetze enthalten)
-      $gruss           - string (kann \n-Zeilenumbrueche enthalten)
-      $footer_firma    - string (kann \n-Zeilenumbrueche enthalten)
-      $footer_kontakt  - string (kann \n-Zeilenumbrueche enthalten)
-      $footer_bank     - string (kann \n-Zeilenumbrueche enthalten)
+      $zahlungstext    - string (kann mehrere Sätze enthalten)
+      $gruss           - string (kann \n-Zeilenumbrüche enthalten)
+      $footer_firma    - string (kann \n-Zeilenumbrüche enthalten)
+      $footer_kontakt  - string (kann \n-Zeilenumbrüche enthalten)
+      $footer_bank     - string (kann \n-Zeilenumbrüche enthalten)
 --}}
 @php
     /*
@@ -32,7 +32,7 @@
         : '';
 
     /*
-     * Zeitraum-Datumsformatierung fuer die Positionstabelle.
+     * Zeitraum-Datumsformatierung für die Positionstabelle.
      * $rechnung->zeitraum_von und zeitraum_bis werden als Carbon-Objekte gecastet.
      * Format: TT.MM.JJ (kurz, passend zur Referenz-PDF)
      */
@@ -41,7 +41,7 @@
 
     /*
      * Summen aus den (eventuell vom Admin bearbeiteten) Positionen neu berechnen.
-     * Wir berechnen hier aus den tatsaechlichen Positionsdaten, nicht aus der DB,
+     * Wir berechnen hier aus den tatsächlichen Positionsdaten, nicht aus der DB,
      * damit bearbeitete Preise korrekt in der PDF erscheinen.
      */
     $nettoBetragPdf  = array_sum(array_column($positionen, 'gesamtpreis'));
@@ -61,7 +61,7 @@
             font-family: DejaVu Sans, sans-serif;
             font-size: 9.5pt;
             color: #222222;
-            /* Seitenraender: oben/unten gross fuer Header und Footer-Bereich */
+            /* Seitenränder: oben/unten groß für Header und Footer-Bereich */
             margin: 20mm 15mm 55mm 15mm;
         }
 
@@ -146,7 +146,7 @@
             padding: 6px 7px;
             font-weight: bold;
             text-align: left;
-            /* rgba(13,110,253,0.18) auf weissem Hintergrund ≈ #d3e5ff */
+            /* rgba(13,110,253,0.18) auf weißem Hintergrund ≈ #d3e5ff */
             background-color: #d3e5ff;
         }
         table.pos thead tr th.r { text-align: right; }
@@ -242,7 +242,7 @@
                 {{-- Logo als Base64-Datenstream (DomPDF-kompatibel) --}}
                 <img src="{{ $logoBase64 }}" alt="ALS Dienstleistungen">
             @else
-                {{-- Fallback: Textrepraesentation des Logos --}}
+                {{-- Fallback: Textrepräsentation des Logos --}}
                 <span style="font-size:22pt; font-weight:bold; color:#0d6efd; letter-spacing:3px;">ALS</span><br>
                 <span style="font-size:7pt; color:#0d6efd; letter-spacing:2px;">DIENSTLEISTUNGEN</span>
             @endif
@@ -259,9 +259,9 @@
     {{ $absender }}
 </div>
 
-{{-- ====== EMPFAENGER-ADRESSBLOCK ====== --}}
+{{-- ====== EMPFÄNGER-ADRESSBLOCK ====== --}}
 <div class="empfaenger">
-    {{-- Firmenname des Empfaengers (vom Admin editierbar) --}}
+    {{-- Firmenname des Empfängers (vom Admin editierbar) --}}
     {{ $empfaenger_name }}<br>
     {{-- Jede Adresszeile wird mit <br> getrennt ausgegeben --}}
     @foreach($adresse_zeilen as $zeile)
@@ -303,8 +303,8 @@
     <tbody>
         {{--
             $positionen ist ein einfaches PHP-Array (direkt iterierbar).
-            $loop->even ergibt true fuer gerade Indices (0, 2, 4, ...) -> Klasse 'gerade'
-            Ungerade Indices (1, 3, 5, ...) -> Klasse 'ungerade' (weisser Hintergrund)
+            $loop->even ergibt true für gerade Indices (0, 2, 4, ...) -> Klasse 'gerade'
+            Ungerade Indices (1, 3, 5, ...) -> Klasse 'ungerade' (weißer Hintergrund)
         --}}
         @foreach($positionen as $i => $pos)
             <tr class="{{ $loop->even ? 'ungerade' : 'gerade' }}">
@@ -331,7 +331,7 @@
             </tr>
         @endforeach
     </tbody>
-    {{-- Abschliesende Linie unter der Tabelle --}}
+    {{-- Abschließende Linie unter der Tabelle --}}
     <tfoot>
         <tr><td colspan="7"></td></tr>
     </tfoot>
@@ -367,9 +367,9 @@
 {{-- ====== ZAHLUNGSTEXT ====== --}}
 <div class="zahlungstext">
     {{--
-        nl2br: Zeilenumbrueche (\n) in <br>-Tags umwandeln.
+        nl2br: Zeilenumbrüche (\n) in <br>-Tags umwandeln.
         e():   HTML-Sonderzeichen escapen (XSS-Schutz).
-        !!:    Ergebnis nicht doppelt escapen (da nl2br HTML zurueckgibt).
+        !!:    Ergebnis nicht doppelt escapen (da nl2br HTML zurückgibt).
     --}}
     {{-- "Rechnungsnummer" wird automatisch fett gedruckt --}}
     {!! str_replace('Rechnungsnummer', '<strong>Rechnungsnummer</strong>', nl2br(e($zahlungstext))) !!}
@@ -377,7 +377,7 @@
 
 {{-- ====== GRUSS ====== --}}
 <div class="gruss">
-    {{-- nl2br fuer mehrzeiligen Grusstext (z.B. "Mit freundlichen Grüßen\nALS Dienstleistungen") --}}
+    {{-- nl2br für mehrzeiligen Grußtext (z.B. "Mit freundlichen Grüßen\nALS Dienstleistungen") --}}
     {!! nl2br(e($gruss)) !!}
 </div>
 

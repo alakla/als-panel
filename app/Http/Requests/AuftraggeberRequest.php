@@ -9,14 +9,14 @@ use Illuminate\Validation\Rule;
  * AuftraggeberRequest – Validierung der Auftraggeber-Formulardaten
  *
  * Validiert alle Eingaben beim Anlegen und Bearbeiten eines Auftraggebers.
- * Der Stundensatz wird jetzt pro Taetigkeit verwaltet (nicht mehr hier).
+ * Der Stundensatz wird jetzt pro Tätigkeit verwaltet (nicht mehr hier).
  *
  * Zugriff: Nur Administratoren
  */
 class AuftraggeberRequest extends FormRequest
 {
     /**
-     * Nur Administratoren duerfen Auftraggeberdaten einreichen.
+     * Nur Administratoren dürfen Auftraggeberdaten einreichen.
      *
      * @return bool
      */
@@ -26,13 +26,13 @@ class AuftraggeberRequest extends FormRequest
     }
 
     /**
-     * Validierungsregeln fuer Auftraggeberdaten.
+     * Validierungsregeln für Auftraggeberdaten.
      *
      * @return array<string, mixed>
      */
     public function rules(): array
     {
-        // Aktuelle Auftraggeber-ID ermitteln (fuer unique-Pruefung beim Bearbeiten)
+        // Aktuelle Auftraggeber-ID ermitteln (für unique-Prüfung beim Bearbeiten)
         $auftraggeberId = $this->route('auftraggeber')?->id;
 
         return [
@@ -42,10 +42,10 @@ class AuftraggeberRequest extends FormRequest
             // Ansprechpartner: Pflichtfeld
             'ansprechpartner' => ['required', 'string', 'max:255'],
 
-            // Adresse: Pflichtfeld (vollstaendige Adresse fuer Rechnungen)
+            // Adresse: Pflichtfeld (vollständige Adresse für Rechnungen)
             'adresse'         => ['required', 'string', 'max:500'],
 
-            // E-Mail: Pflichtfeld, gueltiges Format
+            // E-Mail: Pflichtfeld, gültiges Format
             'email'           => ['required', 'email', 'max:255'],
 
             // Telefon: Optional
