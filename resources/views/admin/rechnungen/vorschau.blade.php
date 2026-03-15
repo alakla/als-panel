@@ -366,13 +366,23 @@
                         {{-- Positionsnummer (wird per JS neu nummeriert) --}}
                         <td class="pos-nr">{{ $i + 1 }}</td>
 
-                        {{-- Beschreibung/Name der Tätigkeit --}}
+                        {{-- Beschreibung/Name der Tätigkeit – Dropdown aus den gespeicherten Tätigkeiten --}}
                         <td>
-                            <input type="text"
-                                   name="positionen[{{ $i }}][name]"
-                                   class="editable-field pos-name"
-                                   value="{{ $pos['name'] }}"
-                                   title="Beschreibung">
+                            <select name="positionen[{{ $i }}][name]"
+                                    class="editable-field pos-name"
+                                    title="Beschreibung"
+                                    style="width:100%; cursor:pointer;">
+                                @foreach($taetigkeiten as $t)
+                                    <option value="{{ $t->name }}"
+                                        {{ $pos['name'] === $t->name ? 'selected' : '' }}>
+                                        {{ $t->name }}
+                                    </option>
+                                @endforeach
+                                {{-- Falls der aktuelle Wert keiner gespeicherten Tätigkeit entspricht (z.B. manuell eingegeben) --}}
+                                @if($taetigkeiten->where('name', $pos['name'])->isEmpty())
+                                    <option value="{{ $pos['name'] }}" selected>{{ $pos['name'] }}</option>
+                                @endif
+                            </select>
                         </td>
 
                         {{-- Zeitraum: editierbar (voller Monat -> "März 2026", sonst "TT.MM.JJ – TT.MM.JJ") --}}
@@ -566,6 +576,21 @@
 {{-- ====== JAVASCRIPT: Zeilenberechnung + Positions-Management ====== --}}
 <script>
 /**
+ * Map aller Tätigkeiten aus der Datenbank, indexiert nach Name.
+ * Enthält abrechnungsart und stundensatz für automatische Feldbefüllung
+ * wenn der Nutzer eine andere Beschreibung auswählt.
+ *
+ * Struktur: { "Tätigkeit A": { einheit: "Std.", einzelpreis: 25.00 }, ... }
+ */
+const taetigkeitenMap = @json(
+    $taetigkeiten->mapWithKeys(fn($t) => [
+        $t->name => [
+            'einheit'      => $t->abrechnungsart === 'pauschal' ? 'Pauschal' : 'Std.',
+            'einzelpreis'  => (float) $t->stundensatz,
+        ]
+    ])
+);
+/**
  * Berechnet den Gesamtpreis einer einzelnen Tabellenzeile.
  *
  * Regeln:
@@ -702,6 +727,27 @@ function aktualisiereIndices() {
  * @param {HTMLTableRowElement} zeile
  */
 function bindZeileEvents(zeile) {
+    // Beschreibung-Dropdown: Einheit und Einzelpreis automatisch befüllen
+    const nameSelect = zeile.querySelector('.pos-name');
+    if (nameSelect) {
+        nameSelect.addEventListener('change', function () {
+            const taetigkeit = taetigkeitenMap[this.value];
+            if (!taetigkeit) return;
+
+            // Einheit setzen (Pauschal / Std.)
+            const einheitSelect = zeile.querySelector('.pos-einheit');
+            if (einheitSelect) einheitSelect.value = taetigkeit.einheit;
+
+            // Einzelpreis setzen
+            const einzelpreisInput = zeile.querySelector('.pos-einzelpreis');
+            if (einzelpreisInput) einzelpreisInput.value = taetigkeit.einzelpreis.toFixed(2);
+
+            // Gesamtpreis und Summen neu berechnen
+            berechneZeile(zeile);
+            berechneSummen();
+        });
+    }
+
     // Einheit-Dropdown: Pauschal/Std. umschalten
     const einheitSelect = zeile.querySelector('.pos-einheit');
     if (einheitSelect) {
@@ -762,11 +808,18 @@ function erstelleNeueZeile(idx) {
     const zeitraumInput = document.querySelector('#positionen-body .pos-zeitraum');
     const zeitraumText  = zeitraumInput ? zeitraumInput.value : '';
 
+    // Optionen für das Beschreibung-Dropdown aus der Tätigkeiten-Map generieren
+    const optionenHtml = Object.keys(taetigkeitenMap).map(function (name) {
+        return '<option value="' + name.replace(/"/g, '&quot;') + '">' + name + '</option>';
+    }).join('');
+
     zeile.innerHTML =
         '<td class="pos-nr">' + (idx + 1) + '</td>' +
         '<td>' +
-            '<input type="text" name="positionen[' + idx + '][name]" ' +
-            'class="editable-field pos-name" value="" placeholder="Beschreibung" title="Beschreibung">' +
+            '<select name="positionen[' + idx + '][name]" ' +
+            'class="editable-field pos-name" title="Beschreibung" style="width:100%; cursor:pointer;">' +
+            optionenHtml +
+            '</select>' +
         '</td>' +
         '<td style="font-size:8pt;">' +
             '<input type="text" name="positionen[' + idx + '][zeitraum]" ' +

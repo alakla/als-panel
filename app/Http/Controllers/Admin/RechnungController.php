@@ -7,6 +7,7 @@ use App\Models\Auftrag;
 use App\Models\Auftraggeber;
 use App\Models\Firmeneinstellung;
 use App\Models\Rechnung;
+use App\Models\Taetigkeit;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\RedirectResponse;
 use Illuminate\Http\Request;
@@ -196,6 +197,9 @@ class RechnungController extends Controller
         // Firmeneinstellungen aus der Datenbank laden (Standardwerte für Vorschau-Felder)
         $einstellung = Firmeneinstellung::laden();
 
+        // Alle Tätigkeiten laden – für das Beschreibung-Dropdown in der Positionstabelle
+        $taetigkeiten = Taetigkeit::orderBy('reihenfolge')->orderBy('name')->get();
+
         return view('admin.rechnungen.vorschau', compact(
             'auftraggeber',
             'positionen',
@@ -207,6 +211,7 @@ class RechnungController extends Controller
             'zeitraumAnzeige',
             'einstellung',
             'vorschauNummer',
+            'taetigkeiten',
             'request'
         ));
     }

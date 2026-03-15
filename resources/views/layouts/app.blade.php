@@ -25,6 +25,11 @@
                             <a class="nav-link {{ request()->routeIs('admin.dashboard') ? 'active' : '' }}"
                                href="{{ route('admin.dashboard') }}">Dashboard</a>
                         </li>
+                        {{-- Aufträge: Admin weist Arbeitsaufträge zu --}}
+                        <li class="nav-item">
+                            <a class="nav-link {{ request()->routeIs('admin.auftraege.*') ? 'active' : '' }}"
+                               href="{{ route('admin.auftraege.index') }}">Aufträge</a>
+                        </li>
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.mitarbeiter.*') ? 'active' : '' }}"
                                href="{{ route('admin.mitarbeiter.index') }}">Mitarbeiter</a>
@@ -36,11 +41,6 @@
                         <li class="nav-item">
                             <a class="nav-link {{ request()->routeIs('admin.rechnungen.*') ? 'active' : '' }}"
                                href="{{ route('admin.rechnungen.index') }}">Rechnungen</a>
-                        </li>
-                        {{-- Aufträge: Admin weist Arbeitsaufträge zu --}}
-                        <li class="nav-item">
-                            <a class="nav-link {{ request()->routeIs('admin.auftraege.*') ? 'active' : '' }}"
-                               href="{{ route('admin.auftraege.index') }}">Aufträge</a>
                         </li>
                         {{-- Einstellung-Dropdown: Tätigkeiten + Rechnungeinstellungen --}}
                         <li class="nav-item dropdown">
